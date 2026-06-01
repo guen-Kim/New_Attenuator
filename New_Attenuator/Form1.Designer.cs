@@ -69,12 +69,16 @@
             label9 = new Label();
             attr5 = new AttenuatorControl();
             attr6 = new AttenuatorControl();
+            grpConfig = new GroupBox();
+            btnLoadConfig = new Button();
+            btnSaveConfig = new Button();
             groupBox1.SuspendLayout();
             grpBand.SuspendLayout();
             grpMode.SuspendLayout();
             grpBtn.SuspendLayout();
             grpEdit.SuspendLayout();
             groupBox2.SuspendLayout();
+            grpConfig.SuspendLayout();
             SuspendLayout();
             // 
             // groupBox1
@@ -191,7 +195,7 @@
             label8.Name = "label8";
             label8.Size = new Size(76, 17);
             label8.TabIndex = 17;
-            label8.Text = "- 1 AP step";
+            label8.Text = "• 1 AP step";
             // 
             // label3
             // 
@@ -201,7 +205,7 @@
             label3.Name = "label3";
             label3.Size = new Size(88, 17);
             label3.TabIndex = 16;
-            label3.Text = "- 4 AP switch";
+            label3.Text = "• 4 AP switch";
             // 
             // label2
             // 
@@ -211,7 +215,7 @@
             label2.Name = "label2";
             label2.Size = new Size(98, 17);
             label2.TabIndex = 15;
-            label2.Text = "- 2 by 2 AP up";
+            label2.Text = "• 2 by 2 AP up";
             // 
             // rbTrans4
             // 
@@ -501,11 +505,43 @@
             attr6.Title = "Attenuator 6";
             attr6.Value = 0;
             // 
+            // grpConfig
+            // 
+            grpConfig.Controls.Add(btnLoadConfig);
+            grpConfig.Controls.Add(btnSaveConfig);
+            grpConfig.Location = new Point(12, 539);
+            grpConfig.Name = "grpConfig";
+            grpConfig.Size = new Size(300, 62);
+            grpConfig.TabIndex = 21;
+            grpConfig.TabStop = false;
+            grpConfig.Text = "Environment Setting";
+            // 
+            // btnLoadConfig
+            // 
+            btnLoadConfig.Location = new Point(157, 22);
+            btnLoadConfig.Name = "btnLoadConfig";
+            btnLoadConfig.Size = new Size(136, 29);
+            btnLoadConfig.TabIndex = 1;
+            btnLoadConfig.Text = "Load INI";
+            btnLoadConfig.UseVisualStyleBackColor = true;
+            btnLoadConfig.Click += btnLoadConfig_Click;
+            // 
+            // btnSaveConfig
+            // 
+            btnSaveConfig.Location = new Point(6, 22);
+            btnSaveConfig.Name = "btnSaveConfig";
+            btnSaveConfig.Size = new Size(136, 29);
+            btnSaveConfig.TabIndex = 0;
+            btnSaveConfig.Text = "Save INI";
+            btnSaveConfig.UseVisualStyleBackColor = true;
+            btnSaveConfig.Click += btnSaveConfig_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(9F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1399, 545);
+            ClientSize = new Size(1399, 613);
+            Controls.Add(grpConfig);
             Controls.Add(attr6);
             Controls.Add(attr5);
             Controls.Add(groupBox2);
@@ -535,6 +571,7 @@
             grpEdit.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            grpConfig.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -580,5 +617,8 @@
         private Label label9;
         private AttenuatorControl attr5;
         private AttenuatorControl attr6;
+        private GroupBox grpConfig;
+        private Button btnLoadConfig;
+        private Button btnSaveConfig;
     }
 }

@@ -16,6 +16,8 @@ namespace New_Attenuator
         private bool isRunning = false;
         private int pendingCh = 0;
         private int pendingVal = 0;
+        private const string ConfigVersion = "1.0";
+        private bool hasPendingDeviceApply = false;
         public Form1()
         {
             InitializeComponent();
@@ -112,6 +114,12 @@ namespace New_Attenuator
                     serialPort.Open();
                     btnConnect.Text = "Disconnect";
                     cboPort.Enabled = false;
+
+                    if (hasPendingDeviceApply)
+                    {
+                        ApplyCurrentAttenuatorSettingsToDevice();
+                        hasPendingDeviceApply = false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -708,6 +716,222 @@ namespace New_Attenuator
             MessageBox.Show(reason, "Communication Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        private void btnSaveConfig_Click(object sender, EventArgs e)
+        {
+            using SaveFileDialog dialog = new SaveFileDialog
+            {
+                Filter = "INI files (*.ini)|*.ini|All files (*.*)|*.*",
+                DefaultExt = "ini",
+                FileName = "attenuator_setting.ini",
+                Title = "Save environment setting"
+            };
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                var ini = new IniFile();
+                SaveCurrentSettings(ini);
+                ini.Save(dialog.FileName);
+                MessageBox.Show("Environment setting saved.", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Save failed: " + ex.Message, "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnLoadConfig_Click(object sender, EventArgs e)
+        {
+            using OpenFileDialog dialog = new OpenFileDialog
+            {
+                Filter = "INI files (*.ini)|*.ini|All files (*.*)|*.*",
+                Title = "Load environment setting"
+            };
+
+            if (dialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                var ini = IniFile.Load(dialog.FileName);
+                LoadSettings(ini);
+                hasPendingDeviceApply = true;
+
+                if (serialPort != null && serialPort.IsOpen)
+                {
+                    ApplyCurrentAttenuatorSettingsToDevice();
+                    hasPendingDeviceApply = false;
+                    MessageBox.Show("Environment setting loaded and applied.", "Load", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Environment setting loaded. Connect the attenuator to apply values.", "Load", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Load failed: " + ex.Message, "Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SaveCurrentSettings(IniFile ini)
+        {
+            ini.Write("Profile", "ConfigVersion", ConfigVersion);
+            ini.Write("Profile", "Name", "DQA_Environment");
+
+            ini.Write("Serial", "Port", cboPort.SelectedItem?.ToString() ?? "");
+            ini.WriteInt("Serial", "BaudRate", serialPort.BaudRate);
+
+            ini.Write("Test", "Band", GetSelectedBand());
+            ini.Write("Test", "Mode", GetSelectedMode());
+            ini.WriteBool("Test", "OverrideParameter", valEdit.Checked);
+            ini.Write("Test", "EnableAnt", cboEnableAnt.SelectedItem?.ToString() ?? "4");
+            ini.Write("Test", "Low", txtLow.Text);
+            ini.Write("Test", "High", txtHigh.Text);
+            ini.Write("Test", "Step", txtStep.Text);
+            ini.Write("Test", "Timeout", txtTimeout.Text);
+
+            SaveAttenuator(ini, 1, attr1);
+            SaveAttenuator(ini, 2, attr2);
+            SaveAttenuator(ini, 3, attr3);
+            SaveAttenuator(ini, 4, attr4);
+            SaveAttenuator(ini, 5, attr5);
+            SaveAttenuator(ini, 6, attr6);
+        }
+
+        private void LoadSettings(IniFile ini)
+        {
+            string version = ini.Read("Profile", "ConfigVersion", ConfigVersion);
+            if (version != ConfigVersion)
+            {
+                throw new InvalidOperationException($"Unsupported config version: {version}");
+            }
+
+            SetComboBoxSelectedText(cboPort, ini.Read("Serial", "Port", cboPort.SelectedItem?.ToString() ?? ""));
+            SetBand(ini.Read("Test", "Band", GetSelectedBand()));
+            SetMode(ini.Read("Test", "Mode", GetSelectedMode()));
+
+            valEdit.Checked = ini.ReadBool("Test", "OverrideParameter", valEdit.Checked);
+            SetComboBoxSelectedText(cboEnableAnt, ini.Read("Test", "EnableAnt", cboEnableAnt.SelectedItem?.ToString() ?? "4"));
+
+            txtLow.Text = ini.Read("Test", "Low", txtLow.Text);
+            txtHigh.Text = ini.Read("Test", "High", txtHigh.Text);
+            txtStep.Text = ini.Read("Test", "Step", txtStep.Text);
+            txtTimeout.Text = ini.Read("Test", "Timeout", txtTimeout.Text);
+
+            LoadAttenuator(ini, 1, attr1);
+            LoadAttenuator(ini, 2, attr2);
+            LoadAttenuator(ini, 3, attr3);
+            LoadAttenuator(ini, 4, attr4);
+            LoadAttenuator(ini, 5, attr5);
+            LoadAttenuator(ini, 6, attr6);
+        }
+
+        private void SaveAttenuator(IniFile ini, int index, AttenuatorControl control)
+        {
+            string section = $"Attenuator{index}";
+            ini.WriteInt(section, "Channel", control.SelectedChannel);
+            ini.WriteInt(section, "Value", control.Value);
+        }
+
+        private void LoadAttenuator(IniFile ini, int index, AttenuatorControl control)
+        {
+            string section = $"Attenuator{index}";
+            control.SelectedChannel = Clamp(ini.ReadInt(section, "Channel", control.SelectedChannel), 0, 12);
+            control.Value = Clamp(ini.ReadInt(section, "Value", control.Value), 0, 95);
+        }
+
+        private void ApplyCurrentAttenuatorSettingsToDevice()
+        {
+            int antCount = 4;
+            if (!int.TryParse(cboEnableAnt.SelectedItem?.ToString(), out antCount))
+            {
+                antCount = 4;
+            }
+
+            if (antCount >= 1) SendCommand(attr1.SelectedChannel, attr1.Value);
+            if (antCount >= 2) SendCommand(attr2.SelectedChannel, attr2.Value);
+            if (antCount >= 3) SendCommand(attr3.SelectedChannel, attr3.Value);
+            if (antCount >= 4) SendCommand(attr4.SelectedChannel, attr4.Value);
+            if (antCount >= 5) SendCommand(attr5.SelectedChannel, attr5.Value);
+            if (antCount >= 6) SendCommand(attr6.SelectedChannel, attr6.Value);
+        }
+
+        private string GetSelectedBand()
+        {
+            if (rbBand5.Checked) return "5GHz";
+            if (rbBand6.Checked) return "6GHz";
+            return "2.4GHz";
+        }
+
+        private void SetBand(string band)
+        {
+            rbBand24.Checked = false;
+            rbBand5.Checked = false;
+            rbBand6.Checked = false;
+
+            if (band == "5GHz") rbBand5.Checked = true;
+            else if (band == "6GHz") rbBand6.Checked = true;
+            else rbBand24.Checked = true;
+        }
+
+        private string GetSelectedMode()
+        {
+            if (rbBasic2.Checked) return "Basic2";
+            if (rbBasic3.Checked) return "Basic3";
+            if (rbTrans1.Checked) return "Transform1";
+            if (rbTrans2.Checked) return "Transform2";
+            if (rbTrans3.Checked) return "Transform3";
+            if (rbTrans4.Checked) return "Transform4";
+            return "Basic1";
+        }
+
+        private void SetMode(string mode)
+        {
+            rbBasic1.Checked = false;
+            rbBasic2.Checked = false;
+            rbBasic3.Checked = false;
+            rbTrans1.Checked = false;
+            rbTrans2.Checked = false;
+            rbTrans3.Checked = false;
+            rbTrans4.Checked = false;
+
+            if (mode == "Basic2") rbBasic2.Checked = true;
+            else if (mode == "Basic3") rbBasic3.Checked = true;
+            else if (mode == "Transform1") rbTrans1.Checked = true;
+            else if (mode == "Transform2") rbTrans2.Checked = true;
+            else if (mode == "Transform3") rbTrans3.Checked = true;
+            else if (mode == "Transform4") rbTrans4.Checked = true;
+            else rbBasic1.Checked = true;
+        }
+
+        private void SetComboBoxSelectedText(ComboBox comboBox, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            if (!comboBox.Items.Contains(value))
+            {
+                comboBox.Items.Add(value);
+            }
+
+            comboBox.SelectedItem = value;
+        }
+
+        private int Clamp(int value, int min, int max)
+        {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
+        }
         private void cboEnableAnt_SelectedIndexChanged(object sender, EventArgs e)
         {
             // 콤보박스에서 선택된 텍스트를 숫자로 변환 시도
