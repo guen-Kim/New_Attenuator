@@ -1,4 +1,4 @@
-namespace New_Attenuator
+﻿namespace New_Attenuator
 {
     internal static class Program
     {

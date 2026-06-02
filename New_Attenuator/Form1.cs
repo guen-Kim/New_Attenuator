@@ -1,7 +1,8 @@
-using System;
+ï»¿using System;
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
+using System.Text;
 using System.Windows.Forms;
 using static New_Attenuator.AttenuatorControl;
 
@@ -16,7 +17,7 @@ namespace New_Attenuator
         private bool isRunning = false;
         private int pendingCh = 0;
         private int pendingVal = 0;
-        private const string ConfigVersion = "1.0";
+        private const string ConfigVersion = "2.0";
         private bool hasPendingDeviceApply = false;
         public Form1()
         {
@@ -32,28 +33,32 @@ namespace New_Attenuator
             modeToolTip.ReshowDelay = 100;
             modeToolTip.ShowAlways = true;
 
-            modeToolTip.SetToolTip(rbBasic1, " AP 2°³¸¦ ±³Â÷ Á¦¾îÇÕ´Ï´Ù. ÇÑÂÊ °¨¼è °ªÀº Áõ°¡ÇÏ°í ´Ù¸¥ ÂÊÀº °¨¼ÒÇÑ µÚ ¹İ´ë·Î º¹±ÍÇÕ´Ï´Ù.");
-            modeToolTip.SetToolTip(rbBasic2, " ¼±ÅÃµÈ ¾ÈÅ×³ª Ã¤³ÎÀ» ¼ø¼­´ë·Î ÇÏ³ª¾¿ start °ª¿¡¼­ end °ª±îÁö ½ºÀ¬ÇÕ´Ï´Ù.");
-            modeToolTip.SetToolTip(rbBasic3, " ÇöÀç ÀÚµ¿ Á¦¾î µ¿ÀÛÀÌ ±¸ÇöµÇ¾î ÀÖÁö ¾Ê½À´Ï´Ù.");
-            modeToolTip.SetToolTip(rbTrans1, " AP 1/3 ±×·ì°ú AP 2/4 ±×·ìÀ» Â÷·Ê·Î ¾àÈ­½ÃÅ°´Â ÀüÈ¯ Å×½ºÆ® ¸ğµåÀÔ´Ï´Ù.");
-            modeToolTip.SetToolTip(rbTrans2, " ÇöÀç ÀÚµ¿ Á¦¾î µ¿ÀÛÀÌ ±¸ÇöµÇ¾î ÀÖÁö ¾Ê½À´Ï´Ù.");
-            modeToolTip.SetToolTip(rbTrans3, " 4°³ AP¸¦ ¼øÂ÷ÀûÀ¸·Î ÀüÈ¯ÇÏ¸ç ·Î¹Ö »óÈ²À» ¹İº¹ Å×½ºÆ®ÇÕ´Ï´Ù.");
-            modeToolTip.SetToolTip(rbTrans4, " AP 1¿¡¼­ ½ÃÀÛÇØ AP 2, AP 3, AP 4 ¹æÇâÀ¸·Î ¼øÂ÷ ÀüÈ¯ÇÏ´Â ·Î¹Ö Å×½ºÆ® ¸ğµåÀÔ´Ï´Ù.");
+            modeToolTip.SetToolTip(rbBasic1, "Cross Fade Test: 2ê°œ APë¥¼ ì„œë¡œ ë°˜ëŒ€ ë°©í–¥ìœ¼ë¡œ ê°ì‡ ì‹œí‚¤ëŠ” êµì°¨ ì œì–´ ëª¨ë“œì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbBasic2, "Sequential Sweep Test: ì„ íƒëœ APë¥¼ ìˆœì„œëŒ€ë¡œ í•˜ë‚˜ì”© startì—ì„œ endê¹Œì§€ ìŠ¤ìœ•í•©ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbBasic3, "Group Sweep Test: ëª¨ë“  í™œì„± APë¥¼ ê°™ì€ ê°’ìœ¼ë¡œ ë™ì‹œì— ì˜¬ë¦¬ê³  ë‚´ë¦¬ëŠ” ê¸°ì¤€ ë™ì‘ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbTrans1, "Dual Pair Handover Test: AP1/AP3ì™€ AP2/AP4ë¥¼ ìˆœì°¨ì ìœ¼ë¡œ ì•½í™”ì‹œí‚¤ëŠ” ì „í™˜ í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbTrans2, "Parallel Pair Handover Test: 2ê°œ AP ìŒì„ ë™ì‹œì— êµì°¨ ì „í™˜í•˜ëŠ” ë³‘ë ¬ handover í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbTrans3, "Sequential Roaming Test: 4ê°œ APë¥¼ ìˆœì„œëŒ€ë¡œ í•˜ë‚˜ì”© ì „í™˜í•˜ëŠ” ë¡œë° í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbTrans4, "Smooth Handover Test: APê°€ ê²¹ì¹˜ë©° ë‹¤ìŒ APë¡œ ìì—°ìŠ¤ëŸ½ê²Œ ë„˜ì–´ê°€ëŠ” handover í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbStepHandover, "Step Handover Test: APë¥¼ í•œ ì¹¸ì”© ìˆœì°¨ì ìœ¼ë¡œ ë„˜ê¸°ëŠ” ê¸°ë³¸ handover í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbPingPong, "Ping-Pong Handover Test: ë‘ AP ì‚¬ì´ë¥¼ ë°˜ë³µ ì „í™˜í•˜ëŠ” ì•ˆì •ì„± í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbDiagonal, "Diagonal Handover Test: ë¹„ì—°ì† APë¡œ ê±´ë„ˆë›°ëŠ” ì „í™˜ ê²½ë¡œ í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
+            modeToolTip.SetToolTip(rbFailover, "Failover Recovery Test: ì£¼ AP ì¥ì•  ì‹œ ë°±ì—… APë¡œ ë³µêµ¬í•˜ëŠ” ì¥ì•  ëŒ€ì‘ í…ŒìŠ¤íŠ¸ì…ë‹ˆë‹¤.");
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Æ÷Æ® ¸ñ·Ï ºÒ·¯¿À±â
+            // í¬íŠ¸ ëª©ë¡ ë¶ˆëŸ¬ì˜¤ê¸°
             grpBand.Enabled = false;
             grpMode.Enabled = false;
             grpBtn.Enabled = false;
 
-            // Enable Ant ÄŞº¸¹Ú½º ¾ÆÀÌÅÛ ÃÊ±âÈ­ ¹× ±âº»°ª ¼³Á¤
+            // Enable Ant ì½¤ë³´ë°•ìŠ¤ ì•„ì´í…œ ì´ˆê¸°í™” ë° ê¸°ë³¸ê°’ ì„¤ì •
             cboEnableAnt.Items.Clear();
             cboEnableAnt.Items.AddRange(new string[] { "1", "2", "3", "4", "5", "6" });
-            cboEnableAnt.DropDownStyle = ComboBoxStyle.DropDownList; // »ç¿ëÀÚ°¡ ÀÓÀÇÀÇ ±ÛÀÚ¸¦ Å¸ÀÌÇÎÇÏÁö ¸øÇÏ°Ô ¸·À½
+            cboEnableAnt.DropDownStyle = ComboBoxStyle.DropDownList; // ì‚¬ìš©ìê°€ ì„ì˜ì˜ ê¸€ìë¥¼ íƒ€ì´í•‘í•˜ì§€ ëª»í•˜ê²Œ ë§‰ìŒ
 
-            // ±âº»À¸·Î 4°³°¡ ¸ğµÎ º¸ÀÌµµ·Ï ÀÎµ¦½º 3("4") ¼±ÅÃ
+            // ê¸°ë³¸ìœ¼ë¡œ 4ê°œê°€ ëª¨ë‘ ë³´ì´ë„ë¡ ì¸ë±ìŠ¤ 3("4") ì„ íƒ
             cboEnableAnt.SelectedIndex = 3;
 
             string[] ports = SerialPort.GetPortNames();
@@ -61,26 +66,26 @@ namespace New_Attenuator
             cboPort.Items.AddRange(ports);
             if (ports.Length > 0) cboPort.SelectedIndex = 0;
 
-            // ½Ã¸®¾ó Æ÷Æ® ±âº» ¼³Á¤ (Àåºñ ½ºÆå¿¡ ¸ÂÃã)
+            // ì‹œë¦¬ì–¼ í¬íŠ¸ ê¸°ë³¸ ì„¤ì • (ì¥ë¹„ ìŠ¤í™ì— ë§ì¶¤)
             serialPort.BaudRate = 115200;
             serialPort.DataBits = 8;
             serialPort.StopBits = StopBits.One;
             serialPort.Parity = Parity.None;
             serialPort.Handshake = Handshake.None;
-            serialPort.ReadTimeout = 500; // 0.5ÃÊ ¾È¿¡ ÀÀ´ä ¾øÀ¸¸é ³Ñ¾î°¨ (¸ØÃã ¹æÁö)
+            serialPort.ReadTimeout = 500; // 0.5ì´ˆ ì•ˆì— ì‘ë‹µ ì—†ìœ¼ë©´ ë„˜ì–´ê° (ë©ˆì¶¤ ë°©ì§€)
 
-            // UI ÃÊ±âÈ­
+            // UI ì´ˆê¸°í™”
             txtLow.Enabled = false;
             txtHigh.Enabled = false;
             txtStep.Enabled = false;
             txtTimeout.Enabled = false;
 
-            // ±âº» 2.4GHz ¼±ÅÃ
+            // ê¸°ë³¸ 2.4GHz ì„ íƒ
             rbBand24.Checked = true;
             ApplyPreset();
 
-            // °¨¼è±â ÀÌº¥Æ® ¿¬°á (AttenuatorControlÀÌ ÀÖ´Ù°í °¡Á¤)
-            // attr1, attr2 µîÀÌ ¾øÀ¸¸é ÀÌ ºÎºĞÀº ÁÖ¼® Ã³¸®ÇÏ°Å³ª ¸ÂÃçÁÖ¼¼¿ä.
+            // ê°ì‡ ê¸° ì´ë²¤íŠ¸ ì—°ê²° (AttenuatorControlì´ ìˆë‹¤ê³  ê°€ì •)
+            // attr1, attr2 ë“±ì´ ì—†ìœ¼ë©´ ì´ ë¶€ë¶„ì€ ì£¼ì„ ì²˜ë¦¬í•˜ê±°ë‚˜ ë§ì¶°ì£¼ì„¸ìš”.
             if (attr1 != null) attr1.AttenuatorChanged += (s, v) => SendCommand(v.Channel, v.Value);
             if (attr2 != null) attr2.AttenuatorChanged += (s, v) => SendCommand(v.Channel, v.Value);
             if (attr3 != null) attr3.AttenuatorChanged += (s, v) => SendCommand(v.Channel, v.Value);
@@ -88,7 +93,7 @@ namespace New_Attenuator
             // attr3, attr4...
         }
 
-        // 3. ¿¬°á ¹öÆ°
+        // 3. ì—°ê²° ë²„íŠ¼
         private void btnConnect_Click(object sender, EventArgs e)
         {
             try
@@ -128,7 +133,7 @@ namespace New_Attenuator
             }
         }
 
-        // 4. Band ¼±ÅÃ ¹× ÇÁ¸®¼Â ·ÎÁ÷
+        // 4. Band ì„ íƒ ë° í”„ë¦¬ì…‹ ë¡œì§
         private void rbBand_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton rb = sender as RadioButton;
@@ -155,31 +160,31 @@ namespace New_Attenuator
 
             txtLow.Text = "0";
             txtStep.Text = "1";
-            txtTimeout.Text = "0"; // 0 = ¹«ÇÑ
+            txtTimeout.Text = "0"; // 0 = ë¬´í•œ
 
             if (rbBand24.Checked) txtHigh.Text = "40";
             else if (rbBand5.Checked) txtHigh.Text = "30";
             else if (rbBand6.Checked) txtHigh.Text = "50";
         }
 
-        // 5. [ÇÙ½É] Start ¹öÆ° (ÀÚµ¿È­)
+        // 5. [í•µì‹¬] Start ë²„íŠ¼ (ìë™í™”)
         private async void btnStart_Click(object sender, EventArgs e)
         {
             if (isRunning) return;
 
             try
             {
-                // 1. ¼³Á¤°ª ÀĞ±â
+                // 1. ì„¤ì •ê°’ ì½ê¸°
                 int startVal = int.Parse(txtLow.Text);
                 int endVal = int.Parse(txtHigh.Text);
                 int stepVal = int.Parse(txtStep.Text);
                 int durationSeconds = int.Parse(txtTimeout.Text);
 
-                // À¯È¿¼º °Ë»ç
+                // ìœ íš¨ì„± ê²€ì‚¬
                 if (stepVal <= 0) { MessageBox.Show("Step size must be > 0"); return; }
                 if (startVal > endVal) { MessageBox.Show("Low must be <= High"); return; }
 
-                // 2. ½ÇÇà ÁØºñ
+                // 2. ì‹¤í–‰ ì¤€ë¹„
                 isRunning = true;
                 ToggleUI(false);
 
@@ -188,14 +193,14 @@ namespace New_Attenuator
 
                 Console.WriteLine("=== Automation Started ===");
 
-                // 3. ¹«ÇÑ ¹İº¹ ·çÇÁ (¿©±â¼­´Â °è¼Ó ÇÔ¼ö¸¦ È£Ãâ¸¸ ÇÔ)
+                // 3. ë¬´í•œ ë°˜ë³µ ë£¨í”„ (ì—¬ê¸°ì„œëŠ” ê³„ì† í•¨ìˆ˜ë¥¼ í˜¸ì¶œë§Œ í•¨)
                 while (isRunning)
                 {
-                    // [ÇÙ½É] ¸ğµå¿¡ ¸Â´Â µ¿ÀÛÀ» ½ÇÇàÇÏ´Â ÇÔ¼ö È£Ãâ!
-                    // ÀÌ ÇÔ¼ö°¡ ÇÑ »çÀÌÅ¬(³¡±îÁö °¬´Ù°¡ º¹±Í)À» ´Ù µ¹ ¶§±îÁö ±â´Ù¸²(await)
+                    // [í•µì‹¬] ëª¨ë“œì— ë§ëŠ” ë™ì‘ì„ ì‹¤í–‰í•˜ëŠ” í•¨ìˆ˜ í˜¸ì¶œ!
+                    // ì´ í•¨ìˆ˜ê°€ í•œ ì‚¬ì´í´(ëê¹Œì§€ ê°”ë‹¤ê°€ ë³µê·€)ì„ ë‹¤ ëŒ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¼(await)
                     await RunAutoCycle(startVal, endVal, stepVal, durationSeconds, sw);
 
-                    // ½Ã°£ Á¦ÇÑ Ã¼Å© (ÇÑ ¹ÙÄû µ¹°í ³ª¼­µµ ½Ã°£ÀÌ ¿À¹öµÆ´ÂÁö È®ÀÎ)
+                    // ì‹œê°„ ì œí•œ ì²´í¬ (í•œ ë°”í€´ ëŒê³  ë‚˜ì„œë„ ì‹œê°„ì´ ì˜¤ë²„ëëŠ”ì§€ í™•ì¸)
                     if (CheckTimeout(sw, durationSeconds)) break;
                 }
             }
@@ -211,13 +216,13 @@ namespace New_Attenuator
             }
         }
 
-        // 6. Stop ¹öÆ°
+        // 6. Stop ë²„íŠ¼
         private void btnStop_Click(object sender, EventArgs e)
         {
-            isRunning = false; // ±ê¹ß ³»¸®±â -> ·çÇÁ Áï½Ã Áß´Ü
+            isRunning = false; // ê¹ƒë°œ ë‚´ë¦¬ê¸° -> ë£¨í”„ ì¦‰ì‹œ ì¤‘ë‹¨
         }
 
-        // 7. ¸í·É Àü¼Û ÇÔ¼ö (*OPC? Àû¿ëµÊ)
+        // 7. ëª…ë ¹ ì „ì†¡ í•¨ìˆ˜ (*OPC? ì ìš©ë¨)
         private void SendCommand(int ch, int val)
         {
             if (serialPort == null || !serialPort.IsOpen)
@@ -230,47 +235,47 @@ namespace New_Attenuator
             {
                 string channelStr = (ch == 0) ? "ALL" : ch.ToString();
 
-                // (1) ¸í·É º¸³»±â
+                // (1) ëª…ë ¹ ë³´ë‚´ê¸°
                 string cmd = $"ATTN {channelStr} {val}\r\n";
                 serialPort.Write(cmd);
 
-                // (2) È®ÀÎ ¸í·É º¸³»±â
+                // (2) í™•ì¸ ëª…ë ¹ ë³´ë‚´ê¸°
                 serialPort.Write("*OPC?\r\n");
 
-                // (3) ÀÀ´ä ´ë±â
+                // (3) ì‘ë‹µ ëŒ€ê¸°
                 try
                 {
                     string response = serialPort.ReadLine();
                 }
                 catch (TimeoutException)
                 {
-                    // Å¸ÀÓ¾Æ¿ôÀº Á¤»óÀûÀÎ µô·¹ÀÌ·Î °£ÁÖÇÏ°í ¹«½Ã
+                    // íƒ€ì„ì•„ì›ƒì€ ì •ìƒì ì¸ ë”œë ˆì´ë¡œ ê°„ì£¼í•˜ê³  ë¬´ì‹œ
                 }
             }
             catch (IOException ex)
             {
-                // Àåºñ ¿¬°áÀÌ ¹°¸®ÀûÀ¸·Î ²÷¾îÁ³À» ¶§ (ÄÉÀÌºí »ÌÈû µî)
+                // ì¥ë¹„ ì—°ê²°ì´ ë¬¼ë¦¬ì ìœ¼ë¡œ ëŠì–´ì¡Œì„ ë•Œ (ì¼€ì´ë¸” ë½‘í˜ ë“±)
                 HandleDisconnection("Connection lost (Device unplugged): " + ex.Message);
             }
             catch (InvalidOperationException ex)
             {
-                // Æ÷Æ®°¡ ¿¹±âÄ¡ ¾Ê°Ô ´İÇûÀ» ¶§
+                // í¬íŠ¸ê°€ ì˜ˆê¸°ì¹˜ ì•Šê²Œ ë‹«í˜”ì„ ë•Œ
                 HandleDisconnection("Serial port closed unexpectedly: " + ex.Message);
             }
             catch (Exception ex)
             {
-                // ±âÅ¸ Ä¡¸íÀûÀÌÁö ¾ÊÀº ¿¡·¯´Â ·Î±×¸¸ ³²±è
+                // ê¸°íƒ€ ì¹˜ëª…ì ì´ì§€ ì•Šì€ ì—ëŸ¬ëŠ” ë¡œê·¸ë§Œ ë‚¨ê¹€
                 Console.WriteLine("Serial Error: " + ex.Message);
             }
         }
 
-        // 8. UI Á¦¾î º¸Á¶ ÇÔ¼ö
+        // 8. UI ì œì–´ ë³´ì¡° í•¨ìˆ˜
         private void ToggleUI(bool enable)
         {
             btnStart.Enabled = enable;
             btnStop.Enabled = !enable;
 
-            // ½ÇÇà Áß¿£ ¼³Á¤ º¯°æ ºÒ°¡
+            // ì‹¤í–‰ ì¤‘ì—” ì„¤ì • ë³€ê²½ ë¶ˆê°€
             valEdit.Enabled = enable;
             grpBand.Enabled = enable;
             grpMode.Enabled = enable;
@@ -286,7 +291,7 @@ namespace New_Attenuator
 
         private void UpdateAllSliders(int val)
         {
-            // attr °´Ã¼°¡ ÀÖ´Ù¸é °ª ¾÷µ¥ÀÌÆ®
+            // attr ê°ì²´ê°€ ìˆë‹¤ë©´ ê°’ ì—…ë°ì´íŠ¸
             if (attr1 != null) attr1.Value = val;
             if (attr2 != null) attr2.Value = val;
             if (attr3 != null) attr3.Value = val;
@@ -296,20 +301,20 @@ namespace New_Attenuator
         {
             if (attr1 != null) attr1.Value = v1;
             if (attr2 != null) attr2.Value = v2;
-            // attr3, attr4´Â ÇÊ¿äÇÏ´Ù¸é v1ÀÌ³ª v2 Áß ÇÏ³ª¸¦ µû¶ó°¡°Å³ª 0À¸·Î ¼³Á¤
+            // attr3, attr4ëŠ” í•„ìš”í•˜ë‹¤ë©´ v1ì´ë‚˜ v2 ì¤‘ í•˜ë‚˜ë¥¼ ë”°ë¼ê°€ê±°ë‚˜ 0ìœ¼ë¡œ ì„¤ì •
         }
         private bool CheckTimeout(System.Diagnostics.Stopwatch sw, int durationSeconds)
         {
-            // 0ÀÌ¸é ¹«ÇÑÀÌ¹Ç·Î Ã¼Å© ¾È ÇÔ (return false)
+            // 0ì´ë©´ ë¬´í•œì´ë¯€ë¡œ ì²´í¬ ì•ˆ í•¨ (return false)
             if (durationSeconds > 0 && sw.Elapsed.TotalSeconds >= durationSeconds)
             {
                 Console.WriteLine("[System] Time limit reached.");
-                isRunning = false; // ±ê¹ß ³»¸®±â
-                return true;       // "½Ã°£ ´Ù µÆ¾î!" ¶ó°í ¾Ë·ÁÁÜ
+                isRunning = false; // ê¹ƒë°œ ë‚´ë¦¬ê¸°
+                return true;       // "ì‹œê°„ ë‹¤ ëì–´!" ë¼ê³  ì•Œë ¤ì¤Œ
             }
             return false;
         }
-        // [»õ·Î¿î º¸Á¶ ÇÔ¼ö] Æ¯Á¤ ¹øÈ£(1~4)ÀÇ °¨¼è±â ½½¶óÀÌ´õ °ª¸¸ ¾÷µ¥ÀÌÆ®
+        // [ìƒˆë¡œìš´ ë³´ì¡° í•¨ìˆ˜] íŠ¹ì • ë²ˆí˜¸(1~4)ì˜ ê°ì‡ ê¸° ìŠ¬ë¼ì´ë” ê°’ë§Œ ì—…ë°ì´íŠ¸
         private void UpdateAttr(int index, int value)
         {
             switch (index)
@@ -323,10 +328,10 @@ namespace New_Attenuator
             }
         }
 
-        private async Task RunAutoCycle(int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        private int GetSelectedAntCount()
         {
             int antCount = 1;
-            if (cboEnableAnt.InvokeRequired) // UI ½º·¹µå ¾ÈÀü Á¢±Ù
+            if (cboEnableAnt.InvokeRequired) // UI ìŠ¤ë ˆë“œ ì•ˆì „ ì ‘ê·¼
             {
                 cboEnableAnt.Invoke(new Action(() => int.TryParse(cboEnableAnt.SelectedItem?.ToString(), out antCount)));
             }
@@ -334,9 +339,14 @@ namespace New_Attenuator
             {
                 int.TryParse(cboEnableAnt.SelectedItem?.ToString(), out antCount);
             }
+            return antCount;
+        }
 
-            // 2. µ¿ÀÛÇÒ ½ÇÁ¦ Ã¤³Î ¸®½ºÆ® ±¸¼º (attr °´Ã¼°¡ »ì¾ÆÀÖ°í Ç¥½ÃµÇ´Â °Í¸¸)
+        private List<int> GetActiveChannels()
+        {
+            int antCount = GetSelectedAntCount();
             List<int> activeChannels = new List<int>();
+
             if (antCount >= 1 && attr1 != null) activeChannels.Add(attr1.SelectedChannel);
             if (antCount >= 2 && attr2 != null) activeChannels.Add(attr2.SelectedChannel);
             if (antCount >= 3 && attr3 != null) activeChannels.Add(attr3.SelectedChannel);
@@ -344,336 +354,648 @@ namespace New_Attenuator
             if (antCount >= 5 && attr5 != null) activeChannels.Add(attr5.SelectedChannel);
             if (antCount >= 6 && attr6 != null) activeChannels.Add(attr6.SelectedChannel);
 
+            return activeChannels;
+        }
+
+        private string NormalizeModeKey(string mode)
+        {
+            if (string.IsNullOrWhiteSpace(mode))
+            {
+                return string.Empty;
+            }
+
+            StringBuilder builder = new StringBuilder(mode.Length);
+            foreach (char ch in mode)
+            {
+                if (char.IsLetterOrDigit(ch))
+                {
+                    builder.Append(char.ToLowerInvariant(ch));
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        private bool EnsureChannelCount(List<int> channels, int required, string modeName)
+        {
+            if (channels.Count < required)
+            {
+                MessageBox.Show($"{modeName} mode requires at least {required} active antennas.", "Mode Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void SetChannelValue(int channel, int attrIndex, int value)
+        {
+            SendCommand(channel, value);
+            UpdateAttr(attrIndex, value);
+        }
+
+        private void SetActiveChannels(List<int> channels, int value)
+        {
+            for (int i = 0; i < channels.Count; i++)
+            {
+                SendCommand(channels[i], value);
+                UpdateAttr(i + 1, value);
+            }
+        }
+
+        private async Task RunAutoCycle(int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            List<int> activeChannels = GetActiveChannels();
             int n = activeChannels.Count;
-            if (n == 0) return;
-
-            // [ÇÙ½É º¯°æ] ÇÏµåÄÚµù(1, 2) ´ë½Å, UI¿¡¼­ ¼±ÅÃµÈ Ã¤³Î ¹øÈ£¸¦ °¡Á®¿É´Ï´Ù.
-            // attr1, attr2°¡ nullÀÌ ¾Æ´ÑÁö Ã¼Å©ÇÏ°í °¡Á®¿É´Ï´Ù (¾øÀ¸¸é ±âº»°ª 1, 2)
-            int ch1 = (attr1 != null) ? attr1.SelectedChannel : 1;
-            int ch2 = (attr2 != null) ? attr2.SelectedChannel : 2;
-            int ch3 = (attr3 != null) ? attr3.SelectedChannel : 3;
-            int ch4 = (attr4 != null) ? attr4.SelectedChannel : 4;
-            int ch5 = (attr5 != null) ? attr5.SelectedChannel : 5;
-            int ch6 = (attr6 != null) ? attr6.SelectedChannel : 6;
-
-            if (rbBasic1.Checked)
+            if (n == 0)
             {
-                // [PHASE 1] ±³Â÷ ÁøÇà (A: °¨¼Ò / B: Áõ°¡)
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-
-                    int valA = end - (i - start); // Max -> Low (°¨¼Ò)
-                    int valB = i;                 // Low -> Max (Áõ°¡)
-
-                    // ¼±ÅÃµÈ Ã¤³Î·Î Àü¼Û!
-                    SendCommand(ch1, valA);
-                    SendCommand(ch2, valB);
-
-                    // È­¸é ½½¶óÀÌ´õµµ °°ÀÌ ¿òÁ÷¿©ÁÜ
-                    UpdateSliders(valA, valB);
-
-                    Console.WriteLine($"[Basic1 Step1] Ch{ch1}:{valA}, Ch{ch2}:{valB}");
-                    await Task.Delay(1000);
-                }
-
-                if (isRunning && !CheckTimeout(sw, duration))
-                {
-                    await Task.Delay(5000);
-                }
-
-                // [PHASE 2] ¿øÀ§Ä¡ º¹±Í (A: Áõ°¡ / B: °¨¼Ò)
-                for (int i = end - step; i >= start; i -= step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-
-                    int valA = end - (i - start); // Low -> Max (Áõ°¡)
-                    int valB = i;                 // Max -> Low (°¨¼Ò)
-
-                    SendCommand(ch1, valA);
-                    SendCommand(ch2, valB);
-
-                    UpdateSliders(valA, valB);
-
-                    Console.WriteLine($"[Basic1 Step2] Ch{ch1}:{valA}, Ch{ch2}:{valB}");
-                    await Task.Delay(1000);
-                }
-
-                if (isRunning && !CheckTimeout(sw, duration))
-                {
-                    await Task.Delay(5000);
-                }
+                return;
             }
-            else if (rbBasic2.Checked)
-            {
-                Console.WriteLine($"[Basic2] {n}-AP Sequential Sweep Start");
 
-                // ÀüÃ¼ Ã¤³Î ÃÊ±âÈ­ (¸ğµÎ Start °ªÀ¸·Î ´ë±â)
-                for (int i = 0; i < n; i++)
-                {
-                    SendCommand(activeChannels[i], start);
-                    UpdateAttr(i + 1, start); // ½½¶óÀÌ´õ UI´Â 1¹øºÎÅÍ ¸ÅÇÎµÊ
-                }
+            string modeKey = NormalizeModeKey(GetSelectedMode());
+
+            switch (modeKey)
+            {
+                case "basic1":
+                    if (!EnsureChannelCount(activeChannels, 2, "Basic1")) return;
+                    await RunBasic1Async(activeChannels[0], activeChannels[1], start, end, step, duration, sw);
+                    break;
+
+                case "basic2":
+                    await RunBasic2Async(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "basic3":
+                    await RunBasic3Async(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "transform1":
+                    if (!EnsureChannelCount(activeChannels, 4, "Transform1")) return;
+                    await RunTransform1Async(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "transform2":
+                    if (!EnsureChannelCount(activeChannels, 4, "Transform2")) return;
+                    await RunTransform2Async(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "transform3":
+                    if (!EnsureChannelCount(activeChannels, 4, "Transform3")) return;
+                    await RunTransform3Async(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "transform4":
+                    if (!EnsureChannelCount(activeChannels, 4, "Transform4")) return;
+                    await RunTransform4Async(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "stephandover":
+                    if (!EnsureChannelCount(activeChannels, 4, "Step Handover")) return;
+                    await RunStepHandoverAsync(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "pingponghandover":
+                    if (!EnsureChannelCount(activeChannels, 2, "Ping-Pong Handover")) return;
+                    await RunPingPongAsync(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "diagonalhandover":
+                    if (!EnsureChannelCount(activeChannels, 4, "Diagonal Handover")) return;
+                    await RunDiagonalAsync(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                case "failoverrecovery":
+                    if (!EnsureChannelCount(activeChannels, 2, "Failover Recovery")) return;
+                    await RunFailoverRecoveryAsync(activeChannels, start, end, step, duration, sw);
+                    break;
+
+                default:
+                    await RunDefaultSweepAsync(start, end, step, duration, sw);
+                    break;
+            }
+        }
+
+        private async Task RunBasic1Async(int ch1, int ch2, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            for (int i = start; i <= end; i += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valA = end - (i - start);
+                int valB = i;
+
+                SendCommand(ch1, valA);
+                SendCommand(ch2, valB);
+                UpdateSliders(valA, valB);
+
+                Console.WriteLine($"[Basic1] Ch{ch1}:{valA}, Ch{ch2}:{valB}");
                 await Task.Delay(1000);
+            }
 
-                // È°¼ºÈ­µÈ Ã¤³Î °³¼ö(n)¸¸Å­ ¼ø¼­´ë·Î ½ºÀ¬ ÁøÇà
-                for (int currentIdx = 0; currentIdx < n; currentIdx++)
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+
+            for (int i = end - step; i >= start; i -= step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valA = end - (i - start);
+                int valB = i;
+
+                SendCommand(ch1, valA);
+                SendCommand(ch2, valB);
+                UpdateSliders(valA, valB);
+
+                Console.WriteLine($"[Basic1 Return] Ch{ch1}:{valA}, Ch{ch2}:{valB}");
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+        }
+
+        private async Task RunBasic2Async(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            Console.WriteLine($"[Basic2] {activeChannels.Count}-AP Sequential Sweep Start");
+
+            SetActiveChannels(activeChannels, start);
+            await Task.Delay(1000);
+
+            for (int currentIdx = 0; currentIdx < activeChannels.Count; currentIdx++)
+            {
+                int ch = activeChannels[currentIdx];
+                Console.WriteLine($"[Basic2] Ch{ch} (Index {currentIdx + 1}) start");
+
+                for (int val = start; val <= end; val += step)
                 {
-                    int ch = activeChannels[currentIdx];
-                    Console.WriteLine($"[Basic2] Ch{ch} (Index {currentIdx + 1}) µ¿ÀÛ ½ÃÀÛ");
+                    if (!isRunning || CheckTimeout(sw, duration)) return;
 
-                    // ÇöÀç Ã¤³Î Sweep
-                    for (int val = start; val <= end; val += step)
-                    {
-                        if (!isRunning || CheckTimeout(sw, duration)) return;
-
-                        SendCommand(ch, val);
-                        UpdateAttr(currentIdx + 1, val);
-
-                        await Task.Delay(1000);
-                    }
-
-                    if (isRunning)
-                    {
-                        Console.WriteLine($">> Ch{ch} Max µµ´Ş! 5ÃÊ ´ë±â");
-                        await Task.Delay(10000);
-                    }
-
-                    // µ¿ÀÛ ³¡³­ Ã¤³ÎÀº ´Ù½Ã ¿ø·¡ »óÅÂ(start)·Î º¹±Í
-                    SendCommand(ch, start);
-                    UpdateAttr(currentIdx + 1, start);
+                    SendCommand(ch, val);
+                    UpdateAttr(currentIdx + 1, val);
                     await Task.Delay(1000);
+                }
+
+                if (isRunning && !CheckTimeout(sw, duration))
+                {
+                    await Task.Delay(10000);
+                }
+
+                SendCommand(ch, start);
+                UpdateAttr(currentIdx + 1, start);
+                await Task.Delay(1000);
+            }
+        }
+
+        private async Task RunBasic3Async(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            Console.WriteLine("[Basic3] Group sweep start");
+
+            SetActiveChannels(activeChannels, start);
+            await Task.Delay(1000);
+
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                SetActiveChannels(activeChannels, val);
+                Console.WriteLine($"[Basic3] ALL active channels: {val}");
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+
+            for (int val = end - step; val >= start; val -= step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                SetActiveChannels(activeChannels, val);
+                Console.WriteLine($"[Basic3 Return] ALL active channels: {val}");
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+        }
+
+        private async Task RunTransform1Async(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+            int ch3 = activeChannels[2];
+            int ch4 = activeChannels[3];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, start);
+            SetChannelValue(ch3, 3, start);
+            SetChannelValue(ch4, 4, start);
+            await Task.Delay(2000);
+
+            Console.WriteLine("[Transform1] Pair 1: AP1/AP3 fade out");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                SetChannelValue(ch1, 1, val);
+                SetChannelValue(ch3, 3, val);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch3, 3, start);
+
+            Console.WriteLine("[Transform1] Pair 2: AP2/AP4 fade out");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                SetChannelValue(ch2, 2, val);
+                SetChannelValue(ch4, 4, val);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+        }
+
+        private async Task RunTransform2Async(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+            int ch3 = activeChannels[2];
+            int ch4 = activeChannels[3];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, end);
+            SetChannelValue(ch3, 3, start);
+            SetChannelValue(ch4, 4, end);
+            await Task.Delay(2000);
+
+            Console.WriteLine("[Transform2] Pair cross fade start");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valOut = val;
+                int valIn = end - (val - start);
+
+                SetChannelValue(ch1, 1, valOut);
+                SetChannelValue(ch2, 2, valIn);
+                SetChannelValue(ch3, 3, valOut);
+                SetChannelValue(ch4, 4, valIn);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+
+            Console.WriteLine("[Transform2] Pair cross fade return");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valOut = val;
+                int valIn = end - (val - start);
+
+                SetChannelValue(ch1, 1, valIn);
+                SetChannelValue(ch2, 2, valOut);
+                SetChannelValue(ch3, 3, valIn);
+                SetChannelValue(ch4, 4, valOut);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+        }
+
+        private async Task RunTransform3Async(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+            int ch3 = activeChannels[2];
+            int ch4 = activeChannels[3];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, end);
+            SetChannelValue(ch3, 3, end);
+            SetChannelValue(ch4, 4, end);
+            await Task.Delay(2000);
+
+            int[] channels = { ch1, ch2, ch3, ch4 };
+            for (int idx = 0; idx < channels.Length; idx++)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int currentAttrIndex = idx + 1;
+                int currentChannel = channels[idx];
+                int nextAttrIndex = (idx + 1) % channels.Length + 1;
+                int nextChannel = channels[(idx + 1) % channels.Length];
+
+                Console.WriteLine($"[Transform3] AP{currentAttrIndex} roaming phase");
+                for (int val = start; val <= end; val += step)
+                {
+                    if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                    SendCommand(currentChannel, val);
+                    UpdateAttr(currentAttrIndex, val);
+                    await Task.Delay(1000);
+                }
+
+                if (isRunning && !CheckTimeout(sw, duration))
+                {
+                    await Task.Delay(5000);
+                }
+
+                SendCommand(currentChannel, end);
+                UpdateAttr(currentAttrIndex, end);
+                SendCommand(nextChannel, start);
+                UpdateAttr(nextAttrIndex, start);
+            }
+        }
+
+        private async Task RunTransform4Async(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+            int ch3 = activeChannels[2];
+            int ch4 = activeChannels[3];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, end);
+            SetChannelValue(ch3, 3, end);
+            SetChannelValue(ch4, 4, end);
+            await Task.Delay(2000);
+
+            Console.WriteLine("[Transform4] Smooth roaming phase 1");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valOut = val;
+                int valIn = end - (val - start);
+                SetChannelValue(ch1, 1, valOut);
+                SetChannelValue(ch2, 2, valIn);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+
+            Console.WriteLine("[Transform4] Smooth roaming phase 2");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valOut = val;
+                int valIn = end - (val - start);
+                SetChannelValue(ch2, 2, valOut);
+                SetChannelValue(ch3, 3, valIn);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+
+            Console.WriteLine("[Transform4] Smooth roaming phase 3");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valOut = val;
+                int valIn = end - (val - start);
+                SetChannelValue(ch3, 3, valOut);
+                SetChannelValue(ch4, 4, valIn);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+
+            Console.WriteLine("[Transform4] Smooth roaming phase 4");
+            for (int val = start; val <= end; val += step)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int valOut = val;
+                int valIn = end - (val - start);
+                SetChannelValue(ch4, 4, valOut);
+                SetChannelValue(ch1, 1, valIn);
+                await Task.Delay(1000);
+            }
+
+            if (isRunning && !CheckTimeout(sw, duration))
+            {
+                await Task.Delay(5000);
+            }
+        }
+
+        private async Task RunStepHandoverAsync(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+            int ch3 = activeChannels[2];
+            int ch4 = activeChannels[3];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, end);
+            SetChannelValue(ch3, 3, end);
+            SetChannelValue(ch4, 4, end);
+            await Task.Delay(1500);
+
+            Console.WriteLine("[StepHandover] AP1 -> AP2 -> AP3 -> AP4");
+            int[] channels = { ch1, ch2, ch3, ch4 };
+            for (int idx = 0; idx < channels.Length; idx++)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int currentAttrIndex = idx + 1;
+                int currentChannel = channels[idx];
+                int nextAttrIndex = (idx + 1) % channels.Length + 1;
+                int nextChannel = channels[(idx + 1) % channels.Length];
+
+                SendCommand(currentChannel, end);
+                UpdateAttr(currentAttrIndex, end);
+                await Task.Delay(700);
+
+                SendCommand(nextChannel, start);
+                UpdateAttr(nextAttrIndex, start);
+                await Task.Delay(1200);
+            }
+        }
+
+        private async Task RunPingPongAsync(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, end);
+            await Task.Delay(1500);
+
+            Console.WriteLine("[PingPong] AP1 <-> AP2");
+            while (isRunning && !CheckTimeout(sw, duration))
+            {
+                for (int val = start; val <= end; val += step)
+                {
+                    if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                    int valOut = val;
+                    int valIn = end - (val - start);
+                    SetChannelValue(ch1, 1, valOut);
+                    SetChannelValue(ch2, 2, valIn);
+                    await Task.Delay(1000);
+                }
+
+                if (isRunning && !CheckTimeout(sw, duration))
+                {
+                    await Task.Delay(3000);
+                }
+
+                for (int val = start; val <= end; val += step)
+                {
+                    if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                    int valOut = val;
+                    int valIn = end - (val - start);
+                    SetChannelValue(ch1, 1, valIn);
+                    SetChannelValue(ch2, 2, valOut);
+                    await Task.Delay(1000);
+                }
+
+                if (isRunning && !CheckTimeout(sw, duration))
+                {
+                    await Task.Delay(3000);
                 }
             }
-            // ¸ğµå 1
-            else if (rbTrans1.Checked)
+        }
+
+        private async Task RunDiagonalAsync(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+            int ch3 = activeChannels[2];
+            int ch4 = activeChannels[3];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, end);
+            SetChannelValue(ch3, 3, end);
+            SetChannelValue(ch4, 4, end);
+            await Task.Delay(1500);
+
+            int[] pathChannels = { ch1, ch3, ch2, ch4 };
+            int[] pathAttrs = { 1, 3, 2, 4 };
+
+            Console.WriteLine("[Diagonal] AP1 -> AP3 -> AP2 -> AP4");
+            for (int idx = 0; idx < pathChannels.Length; idx++)
             {
-                // [ÃÊ±â »óÅÂ ¼³Á¤] AP1,3 Strong(start), AP2, 4´Â Weak(end)
-                SendCommand(ch1, start); UpdateAttr(1, start);
-                SendCommand(ch2, start); UpdateAttr(2, start);
-                SendCommand(ch3, start); UpdateAttr(3, start);
-                SendCommand(ch4, start); UpdateAttr(4, start);
-                await Task.Delay(2000); // ÃÊ±âÈ­ ¾ÈÁ¤ ½Ã°£
+                if (!isRunning || CheckTimeout(sw, duration)) return;
 
-                Console.WriteLine("[Trans4] Phase 1: AP1¢Ö AP2, AP3, AP4 start");
-                for (int i = start; i <= end; i += step)
+                int currentChannel = pathChannels[idx];
+                int currentAttrIndex = pathAttrs[idx];
+                int nextChannel = pathChannels[(idx + 1) % pathChannels.Length];
+                int nextAttrIndex = pathAttrs[(idx + 1) % pathAttrs.Length];
+
+                for (int val = start; val <= end; val += step)
                 {
                     if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;                 // start -> end (¾àÇØÁü)
 
-                    SendCommand(ch1, valOut); UpdateAttr(1, valOut); // AP1 Out
-                    SendCommand(ch3, valOut); UpdateAttr(3, valOut); // AP3 Out
-
+                    int valOut = val;
+                    int valIn = end - (val - start);
+                    SetChannelValue(currentChannel, currentAttrIndex, valOut);
+                    SetChannelValue(nextChannel, nextAttrIndex, valIn);
                     await Task.Delay(1000);
                 }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
 
-                SendCommand(ch1, start); UpdateAttr(1, start);
-                SendCommand(ch3, start); UpdateAttr(3, start);
-
-                Console.WriteLine("[Trans4] Phase 1: AP1¢Ö AP2, AP3, AP4 start");
-                for (int i = start; i <= end; i += step)
+                if (isRunning && !CheckTimeout(sw, duration))
                 {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;                 // start -> end (¾àÇØÁü)
-
-                    SendCommand(ch2, valOut); UpdateAttr(2, valOut); // AP2 Out
-                    SendCommand(ch4, valOut); UpdateAttr(4, valOut); // AP4 Out
-
-                    await Task.Delay(1000);
+                    await Task.Delay(4000);
                 }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
             }
-            else if (rbTrans2.Checked)
-            {
+        }
 
+        private async Task RunFailoverRecoveryAsync(List<int> activeChannels, int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            int ch1 = activeChannels[0];
+            int ch2 = activeChannels[1];
+            int ch3 = activeChannels[2];
+            int ch4 = activeChannels[3];
+
+            SetChannelValue(ch1, 1, start);
+            SetChannelValue(ch2, 2, end);
+            SetChannelValue(ch3, 3, end);
+            SetChannelValue(ch4, 4, end);
+            await Task.Delay(1500);
+
+            int[] primaryOrder = { ch1, ch2, ch3, ch4 };
+            Console.WriteLine("[Failover] Primary to backup recovery sequence");
+
+            for (int idx = 0; idx < primaryOrder.Length; idx++)
+            {
+                if (!isRunning || CheckTimeout(sw, duration)) return;
+
+                int currentChannel = primaryOrder[idx];
+                int currentAttrIndex = idx + 1;
+                int nextChannel = primaryOrder[(idx + 1) % primaryOrder.Length];
+                int nextAttrIndex = (idx + 1) % primaryOrder.Length + 1;
+
+                SendCommand(currentChannel, end);
+                UpdateAttr(currentAttrIndex, end);
+                await Task.Delay(500);
+
+                SendCommand(nextChannel, start);
+                UpdateAttr(nextAttrIndex, start);
+                await Task.Delay(2500);
             }
-            // ¸ğµå 3
-            else if (rbTrans3.Checked)
+        }
+
+        private async Task RunDefaultSweepAsync(int start, int end, int step, int duration, System.Diagnostics.Stopwatch sw)
+        {
+            for (int i = start; i <= end; i += step)
             {
-                Console.WriteLine(">>> [Trans4] 4-AP Roaming Cycle Start");
+                if (!isRunning || CheckTimeout(sw, duration)) return;
 
-                // [ÃÊ±â »óÅÂ ¼³Á¤] AP1¸¸ Strong(start), ³ª¸ÓÁö´Â Weak(end)
-                SendCommand(ch1, start); UpdateAttr(1, start);
-                SendCommand(ch2, start); UpdateAttr(2, start);
-                SendCommand(ch3, start); UpdateAttr(3, start);
-                SendCommand(ch4, start); UpdateAttr(4, start);
-                await Task.Delay(2000); // ÃÊ±âÈ­ ¾ÈÁ¤ ½Ã°£
-
-                // --- PHASE 1: AP1(Fade Out) -> AP2(Fade In) ---
-                Console.WriteLine("[Trans4] Phase 1: AP1¢Ö AP2, AP3, AP4 start");
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;                 // start -> end (¾àÇØÁü)
-
-                    SendCommand(ch1, valOut); UpdateAttr(1, valOut); // AP1 Out
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-
-                Console.WriteLine("[Trans4] Phase 2: AP2¢Ö AP1, AP3, AP4 start");
-                SendCommand(ch1, start); UpdateAttr(1, start);
-                SendCommand(ch3, start); UpdateAttr(3, start);
-                SendCommand(ch4, start); UpdateAttr(4, start);
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;
-
-                    SendCommand(ch2, valOut); UpdateAttr(2, valOut); // AP2 Out
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-
-
-                // --- PHASE 3: AP3(Fade Out) -> AP4(Fade In) ---
-                Console.WriteLine("[Trans4] Phase 3: AP3¢Ö AP1, AP2, AP4 start");
-                SendCommand(ch1, start); UpdateAttr(1, start);
-                SendCommand(ch2, start); UpdateAttr(2, start);
-                SendCommand(ch4, start); UpdateAttr(4, start);
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;
-
-                    SendCommand(ch3, valOut); UpdateAttr(3, valOut); // AP3 Out
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-
-
-                // --- PHASE 4: AP4(Fade Out) -> AP1(Fade In) [Loop Back] ---
-                Console.WriteLine("[Trans4] Phase 4: AP4¢Ö AP1, AP2, AP3 start");
-                SendCommand(ch1, start); UpdateAttr(1, start);
-                SendCommand(ch2, start); UpdateAttr(2, start);
-                SendCommand(ch3, start); UpdateAttr(3, start);
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;
-
-                    SendCommand(ch4, valOut); UpdateAttr(4, valOut); // AP4 Out
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Cycle ¿Ï·á (AP1 Strong º¹±Í). 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-            }
-            // ========================================================
-            // [¸ğµå 4] Transform 4: 4-AP Sequential Roaming (¼øÂ÷ ÁßÃ¸ ·Î¹Ö)
-            // (AP1->AP2->AP3->AP4->AP1 ¹İº¹)
-            // ========================================================
-            else if (rbTrans4.Checked)
-            {
-                Console.WriteLine(">>> [Trans4] 4-AP Roaming Cycle Start");
-
-                // [ÃÊ±â »óÅÂ ¼³Á¤] AP1¸¸ Strong(start), ³ª¸ÓÁö´Â Weak(end)
-                SendCommand(ch1, start); UpdateAttr(1, start);
-                SendCommand(ch2, end); UpdateAttr(2, end);
-                SendCommand(ch3, end); UpdateAttr(3, end);
-                SendCommand(ch4, end); UpdateAttr(4, end);
-                await Task.Delay(2000); // ÃÊ±âÈ­ ¾ÈÁ¤ ½Ã°£
-
-                // --- PHASE 1: AP1(Fade Out) -> AP2(Fade In) ---
-                Console.WriteLine("[Trans4] Phase 1: AP1¢Ù AP2¢Ö (AP3,4 Max)");
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;                 // start -> end (¾àÇØÁü)
-                    int valIn = end - (i - start);  // end -> start (°­ÇØÁü)
-
-                    SendCommand(ch1, valOut); UpdateAttr(1, valOut); // AP1 Out
-                    SendCommand(ch2, valIn); UpdateAttr(2, valIn);  // AP2 In
-                                                                    // AP3, AP4´Â ÀÌ¹Ì Max »óÅÂ À¯Áö
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-
-
-                // --- PHASE 2: AP2(Fade Out) -> AP3(Fade In) ---
-                Console.WriteLine("[Trans4] Phase 2: AP2¢Ù AP3¢Ö (AP1,4 Max)");
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;
-                    int valIn = end - (i - start);
-
-                    SendCommand(ch2, valOut); UpdateAttr(2, valOut); // AP2 Out
-                    SendCommand(ch3, valIn); UpdateAttr(3, valIn);  // AP3 In
-                                                                    // AP1(ÀÌ¹Ì Max), AP4(°è¼Ó Max) À¯Áö
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-
-
-                // --- PHASE 3: AP3(Fade Out) -> AP4(Fade In) ---
-                Console.WriteLine("[Trans4] Phase 3: AP3¢Ù AP4¢Ö (AP1,2 Max)");
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;
-                    int valIn = end - (i - start);
-
-                    SendCommand(ch3, valOut); UpdateAttr(3, valOut); // AP3 Out
-                    SendCommand(ch4, valIn); UpdateAttr(4, valIn);  // AP4 In
-                                                                    // AP1, AP2 Max À¯Áö
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Handover ¿Ï·á. 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-
-
-                // --- PHASE 4: AP4(Fade Out) -> AP1(Fade In) [Loop Back] ---
-                Console.WriteLine("[Trans4] Phase 4: AP4¢Ù AP1¢Ö (AP2,3 Max)");
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-                    int valOut = i;
-                    int valIn = end - (i - start);
-
-                    SendCommand(ch4, valOut); UpdateAttr(4, valOut); // AP4 Out
-                    SendCommand(ch1, valIn); UpdateAttr(1, valIn);  // AP1 In (´Ù½Ã °­ÇØÁü)
-                                                                    // AP2, AP3 Max À¯Áö
-
-                    await Task.Delay(1000);
-                }
-                if (isRunning) { Console.WriteLine(">> [Hold] Cycle ¿Ï·á (AP1 Strong º¹±Í). 5ÃÊ ´ë±â"); await Task.Delay(5000); }
-            }
-            // 2. ±× ¿Ü (Normal Sweep Mode)
-            else
-            {
-                // ´Ü¼ø Áõ°¡ (0 -> Max)
-                for (int i = start; i <= end; i += step)
-                {
-                    if (!isRunning || CheckTimeout(sw, duration)) return;
-
-                    // ÀÏ¹İ ¸ğµå´Â "Channel ALL(0)"·Î º¸³¾Áö, ¾Æ´Ï¸é °¢ÀÚ Ã¤³Î·Î º¸³¾Áö °áÁ¤ÇØ¾ß ÇÔ.
-                    // ÀÏ´ÜÀº 'ALL(0)'·Î ÀüÃ¼ Á¦¾îÇÏµµ·Ï À¯ÁöÇÕ´Ï´Ù.
-                    SendCommand(0, i);
-                    UpdateAllSliders(i);
-
-                    Console.WriteLine($"[Normal Sweep] ALL: {i}");
-                    await Task.Delay(1000);
-                }
+                SendCommand(0, i);
+                UpdateAllSliders(i);
+                Console.WriteLine($"[Normal Sweep] ALL: {i}");
+                await Task.Delay(1000);
             }
         }
 
         private void cboPort_DropDown(object sender, EventArgs e)
         {
-            // ±âÁ¸¿¡ ¼±ÅÃµÈ Æ÷Æ® ÀÌ¸§ ±â¾ï
+            // ê¸°ì¡´ì— ì„ íƒëœ í¬íŠ¸ ì´ë¦„ ê¸°ì–µ
             string currentSelection = cboPort.SelectedItem?.ToString();
 
-            // ÇöÀç PC¿¡ ¿¬°áµÈ Æ÷Æ® ´Ù½Ã ºÒ·¯¿À±â
+            // í˜„ì¬ PCì— ì—°ê²°ëœ í¬íŠ¸ ë‹¤ì‹œ ë¶ˆëŸ¬ì˜¤ê¸°
             string[] ports = SerialPort.GetPortNames();
             cboPort.Items.Clear();
             cboPort.Items.AddRange(ports);
 
-            // ÀÌÀü¿¡ ¼±ÅÃÇß´ø Æ÷Æ®°¡ ¿©ÀüÈ÷ Á¸ÀçÇÏ¸é ´Ù½Ã ¼±ÅÃ, ¾øÀ¸¸é Ã¹ ¹øÂ° Ç×¸ñ ¼±ÅÃ
+            // ì´ì „ì— ì„ íƒí–ˆë˜ í¬íŠ¸ê°€ ì—¬ì „íˆ ì¡´ì¬í•˜ë©´ ë‹¤ì‹œ ì„ íƒ, ì—†ìœ¼ë©´ ì²« ë²ˆì§¸ í•­ëª© ì„ íƒ
             if (!string.IsNullOrEmpty(currentSelection) && cboPort.Items.Contains(currentSelection))
             {
                 cboPort.SelectedItem = currentSelection;
@@ -686,7 +1008,7 @@ namespace New_Attenuator
 
         private void HandleDisconnection(string reason)
         {
-            // UI ½º·¹µå Á¢±Ù ¿À·ù ¹æÁö (InvokeRequired Ã¼Å©)
+            // UI ìŠ¤ë ˆë“œ ì ‘ê·¼ ì˜¤ë¥˜ ë°©ì§€ (InvokeRequired ì²´í¬)
             if (this.InvokeRequired)
             {
                 this.Invoke(new Action(() => HandleDisconnection(reason)));
@@ -695,16 +1017,16 @@ namespace New_Attenuator
 
             Console.WriteLine($"[Error] {reason}");
 
-            isRunning = false; // ÀÚµ¿È­ ·çÇÁ °­Á¦ Á¾·á
-            ToggleUI(true);    // UI Àá±İ ÇØÁ¦
+            isRunning = false; // ìë™í™” ë£¨í”„ ê°•ì œ ì¢…ë£Œ
+            ToggleUI(true);    // UI ì ê¸ˆ í•´ì œ
 
-            // Æ÷Æ®°¡ ¿­·ÁÀÖ´Ù¸é °­Á¦·Î ´İ±â ½Ãµµ
+            // í¬íŠ¸ê°€ ì—´ë ¤ìˆë‹¤ë©´ ê°•ì œë¡œ ë‹«ê¸° ì‹œë„
             if (serialPort != null && serialPort.IsOpen)
             {
                 try { serialPort.Close(); } catch { }
             }
 
-            // ¿¬°á ¹öÆ° ¹× UI ÃÊ±âÈ­
+            // ì—°ê²° ë²„íŠ¼ ë° UI ì´ˆê¸°í™”
             btnConnect.Text = "Connection";
             btnConnect.BackColor = SystemColors.Control;
             cboPort.Enabled = true;
@@ -808,6 +1130,7 @@ namespace New_Attenuator
 
             ini.Write("Test", "Band", GetSelectedBand());
             ini.Write("Test", "Mode", GetSelectedMode());
+            ini.Write("Test", "ModeText", GetSelectedModeText());
             ini.WriteBool("Test", "OverrideParameter", valEdit.Checked);
             ini.Write("Test", "EnableAnt", cboEnableAnt.SelectedItem?.ToString() ?? "4");
             ini.Write("Test", "Low", txtLow.Text);
@@ -826,14 +1149,15 @@ namespace New_Attenuator
         private void LoadSettings(IniFile ini)
         {
             string version = ini.Read("Profile", "ConfigVersion", ConfigVersion);
-            if (version != ConfigVersion)
+            if (version != "1.0" && version != ConfigVersion)
             {
                 throw new InvalidOperationException($"Unsupported config version: {version}");
             }
 
             SetComboBoxSelectedText(cboPort, ini.Read("Serial", "Port", cboPort.SelectedItem?.ToString() ?? ""));
             SetBand(ini.Read("Test", "Band", GetSelectedBand()));
-            SetMode(ini.Read("Test", "Mode", GetSelectedMode()));
+            string modeValue = ini.Read("Test", "Mode", ini.Read("Test", "ModeText", GetSelectedMode()));
+            SetMode(modeValue);
 
             valEdit.Checked = ini.ReadBool("Test", "OverrideParameter", valEdit.Checked);
             SetComboBoxSelectedText(cboEnableAnt, ini.Read("Test", "EnableAnt", cboEnableAnt.SelectedItem?.ToString() ?? "4"));
@@ -907,7 +1231,27 @@ namespace New_Attenuator
             if (rbTrans2.Checked) return "Transform2";
             if (rbTrans3.Checked) return "Transform3";
             if (rbTrans4.Checked) return "Transform4";
+            if (rbStepHandover.Checked) return "StepHandover";
+            if (rbPingPong.Checked) return "PingPongHandover";
+            if (rbDiagonal.Checked) return "DiagonalHandover";
+            if (rbFailover.Checked) return "FailoverRecovery";
             return "Basic1";
+        }
+
+        private string GetSelectedModeText()
+        {
+            if (rbBasic1.Checked) return rbBasic1.Text;
+            if (rbBasic2.Checked) return rbBasic2.Text;
+            if (rbBasic3.Checked) return rbBasic3.Text;
+            if (rbTrans1.Checked) return rbTrans1.Text;
+            if (rbTrans2.Checked) return rbTrans2.Text;
+            if (rbTrans3.Checked) return rbTrans3.Text;
+            if (rbTrans4.Checked) return rbTrans4.Text;
+            if (rbStepHandover.Checked) return rbStepHandover.Text;
+            if (rbPingPong.Checked) return rbPingPong.Text;
+            if (rbDiagonal.Checked) return rbDiagonal.Text;
+            if (rbFailover.Checked) return rbFailover.Text;
+            return rbBasic1.Text;
         }
 
         private void SetMode(string mode)
@@ -919,13 +1263,23 @@ namespace New_Attenuator
             rbTrans2.Checked = false;
             rbTrans3.Checked = false;
             rbTrans4.Checked = false;
+            rbStepHandover.Checked = false;
+            rbPingPong.Checked = false;
+            rbDiagonal.Checked = false;
+            rbFailover.Checked = false;
 
-            if (mode == "Basic2") rbBasic2.Checked = true;
-            else if (mode == "Basic3") rbBasic3.Checked = true;
-            else if (mode == "Transform1") rbTrans1.Checked = true;
-            else if (mode == "Transform2") rbTrans2.Checked = true;
-            else if (mode == "Transform3") rbTrans3.Checked = true;
-            else if (mode == "Transform4") rbTrans4.Checked = true;
+            string normalized = NormalizeModeKey(mode);
+
+            if (normalized == "basic2") rbBasic2.Checked = true;
+            else if (normalized == "basic3") rbBasic3.Checked = true;
+            else if (normalized == "transform1") rbTrans1.Checked = true;
+            else if (normalized == "transform2") rbTrans2.Checked = true;
+            else if (normalized == "transform3") rbTrans3.Checked = true;
+            else if (normalized == "transform4") rbTrans4.Checked = true;
+            else if (normalized == "stephandover") rbStepHandover.Checked = true;
+            else if (normalized == "pingponghandover") rbPingPong.Checked = true;
+            else if (normalized == "diagonalhandover") rbDiagonal.Checked = true;
+            else if (normalized == "failoverrecovery") rbFailover.Checked = true;
             else rbBasic1.Checked = true;
         }
 
@@ -952,10 +1306,10 @@ namespace New_Attenuator
         }
         private void cboEnableAnt_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // ÄŞº¸¹Ú½º¿¡¼­ ¼±ÅÃµÈ ÅØ½ºÆ®¸¦ ¼ıÀÚ·Î º¯È¯ ½Ãµµ
+            // ì½¤ë³´ë°•ìŠ¤ì—ì„œ ì„ íƒëœ í…ìŠ¤íŠ¸ë¥¼ ìˆ«ìë¡œ ë³€í™˜ ì‹œë„
             if (int.TryParse(cboEnableAnt.SelectedItem?.ToString(), out int antCount))
             {
-                // 1. ¼±ÅÃÇÑ ¼ıÀÚ¿¡ ¸ÂÃç °¨¼è±â ÄÁÆ®·ÑÀÇ Visible ¼Ó¼º ÄÑ°í ²ô±â
+                // 1. ì„ íƒí•œ ìˆ«ìì— ë§ì¶° ê°ì‡ ê¸° ì»¨íŠ¸ë¡¤ì˜ Visible ì†ì„± ì¼œê³  ë„ê¸°
                 if (attr1 != null) attr1.Visible = (antCount >= 1);
                 if (attr2 != null) attr2.Visible = (antCount >= 2);
                 if (attr3 != null) attr3.Visible = (antCount >= 3);
@@ -963,11 +1317,11 @@ namespace New_Attenuator
                 if (attr5 != null) attr5.Visible = (antCount >= 5);
                 if (attr6 != null) attr6.Visible = (antCount >= 6);
 
-                // 2. Æû »çÀÌÁî(³Êºñ) µ¿Àû Á¶Àı ·ÎÁ÷
-                int paddingRight = 20; // ¿ìÃø ³¡¿¡ ¾à°£ÀÇ ¿©¹é(Margin)À» Áİ´Ï´Ù.
+                // 2. í¼ ì‚¬ì´ì¦ˆ(ë„ˆë¹„) ë™ì  ì¡°ì ˆ ë¡œì§
+                int paddingRight = 20; // ìš°ì¸¡ ëì— ì•½ê°„ì˜ ì—¬ë°±(Margin)ì„ ì¤ë‹ˆë‹¤.
                 int newWidth = this.ClientSize.Width;
 
-                // °¡Àå ¿ìÃø¿¡ ¹èÄ¡µÇ´Â(º¸ÀÌ´Â) °¨¼è±âÀÇ Right ¼Ó¼º(xÁÂÇ¥ + ³Êºñ)À» ±âÁØÀ¸·Î Æû ³Êºñ °è»ê
+                // ê°€ì¥ ìš°ì¸¡ì— ë°°ì¹˜ë˜ëŠ”(ë³´ì´ëŠ”) ê°ì‡ ê¸°ì˜ Right ì†ì„±(xì¢Œí‘œ + ë„ˆë¹„)ì„ ê¸°ì¤€ìœ¼ë¡œ í¼ ë„ˆë¹„ ê³„ì‚°
                 if (antCount == 6 && attr6 != null) newWidth = attr6.Right + paddingRight;
                 else if (antCount == 5 && attr5 != null) newWidth = attr5.Right + paddingRight;
                 else if (antCount == 4 && attr4 != null) newWidth = attr4.Right + paddingRight;
@@ -975,7 +1329,7 @@ namespace New_Attenuator
                 else if (antCount == 2 && attr2 != null) newWidth = attr2.Right + paddingRight;
                 else if (antCount == 1 && attr1 != null) newWidth = attr1.Right + paddingRight;
 
-                // FormÀÇ ³»ºÎ ±×¸®±â ¿µ¿ª(ClientSize)À» º¯°æ. ³ôÀÌ´Â ±âÁ¸ ³ôÀÌ À¯Áö.
+                // Formì˜ ë‚´ë¶€ ê·¸ë¦¬ê¸° ì˜ì—­(ClientSize)ì„ ë³€ê²½. ë†’ì´ëŠ” ê¸°ì¡´ ë†’ì´ ìœ ì§€.
                 this.ClientSize = new Size(newWidth, this.ClientSize.Height);
             }
         }

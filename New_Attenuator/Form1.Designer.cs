@@ -37,9 +37,11 @@
             rbBand5 = new RadioButton();
             rbBand24 = new RadioButton();
             grpMode = new GroupBox();
-            label8 = new Label();
-            label3 = new Label();
-            label2 = new Label();
+            pnlMode = new FlowLayoutPanel();
+            rbFailover = new RadioButton();
+            rbDiagonal = new RadioButton();
+            rbPingPong = new RadioButton();
+            rbStepHandover = new RadioButton();
             rbTrans4 = new RadioButton();
             rbTrans3 = new RadioButton();
             rbBasic3 = new RadioButton();
@@ -75,6 +77,7 @@
             groupBox1.SuspendLayout();
             grpBand.SuspendLayout();
             grpMode.SuspendLayout();
+            pnlMode.SuspendLayout();
             grpBtn.SuspendLayout();
             grpEdit.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -170,123 +173,160 @@
             // 
             // grpMode
             // 
-            grpMode.Controls.Add(label8);
-            grpMode.Controls.Add(label3);
-            grpMode.Controls.Add(label2);
-            grpMode.Controls.Add(rbTrans4);
-            grpMode.Controls.Add(rbTrans3);
-            grpMode.Controls.Add(rbBasic3);
-            grpMode.Controls.Add(rbTrans2);
-            grpMode.Controls.Add(rbBasic2);
-            grpMode.Controls.Add(rbTrans1);
-            grpMode.Controls.Add(rbBasic1);
+            grpMode.AutoSize = true;
+            grpMode.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            grpMode.Controls.Add(pnlMode);
             grpMode.Location = new Point(12, 159);
             grpMode.Name = "grpMode";
-            grpMode.Size = new Size(300, 161);
+            grpMode.Padding = new Padding(8);
             grpMode.TabIndex = 5;
             grpMode.TabStop = false;
             grpMode.Text = "Select Mode";
             // 
-            // label8
+            // pnlMode
             // 
-            label8.AutoSize = true;
-            label8.Font = new Font("맑은 고딕", 7.5F);
-            label8.Location = new Point(21, 134);
-            label8.Name = "label8";
-            label8.Size = new Size(76, 17);
-            label8.TabIndex = 17;
-            label8.Text = "• 1 AP step";
+            pnlMode.AutoSize = true;
+            pnlMode.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            pnlMode.Controls.Add(rbBasic1);
+            pnlMode.Controls.Add(rbBasic2);
+            pnlMode.Controls.Add(rbBasic3);
+            pnlMode.Controls.Add(rbTrans1);
+            pnlMode.Controls.Add(rbTrans2);
+            pnlMode.Controls.Add(rbTrans3);
+            pnlMode.Controls.Add(rbTrans4);
+            pnlMode.Controls.Add(rbStepHandover);
+            pnlMode.Controls.Add(rbPingPong);
+            pnlMode.Controls.Add(rbDiagonal);
+            pnlMode.Controls.Add(rbFailover);
+            pnlMode.FlowDirection = FlowDirection.TopDown;
+            pnlMode.Location = new Point(11, 27);
+            pnlMode.Margin = new Padding(0);
+            pnlMode.Name = "pnlMode";
+            pnlMode.Size = new Size(171, 293);
+            pnlMode.TabIndex = 18;
+            pnlMode.WrapContents = false;
             // 
-            // label3
+            // rbFailover
             // 
-            label3.AutoSize = true;
-            label3.Font = new Font("맑은 고딕", 7.5F);
-            label3.Location = new Point(152, 134);
-            label3.Name = "label3";
-            label3.Size = new Size(88, 17);
-            label3.TabIndex = 16;
-            label3.Text = "• 4 AP switch";
+            rbFailover.AutoSize = true;
+            rbFailover.Location = new Point(3, 276);
+            rbFailover.Margin = new Padding(3, 0, 3, 4);
+            rbFailover.Name = "rbFailover";
+            rbFailover.Size = new Size(169, 24);
+            rbFailover.TabIndex = 10;
+            rbFailover.Text = "Failover Recovery Test";
+            rbFailover.UseVisualStyleBackColor = true;
             // 
-            // label2
+            // rbDiagonal
             // 
-            label2.AutoSize = true;
-            label2.Font = new Font("맑은 고딕", 7.5F);
-            label2.Location = new Point(21, 83);
-            label2.Name = "label2";
-            label2.Size = new Size(98, 17);
-            label2.TabIndex = 15;
-            label2.Text = "• 2 by 2 AP up";
+            rbDiagonal.AutoSize = true;
+            rbDiagonal.Location = new Point(3, 250);
+            rbDiagonal.Margin = new Padding(3, 0, 3, 4);
+            rbDiagonal.Name = "rbDiagonal";
+            rbDiagonal.Size = new Size(150, 24);
+            rbDiagonal.TabIndex = 9;
+            rbDiagonal.Text = "Diagonal Handover Test";
+            rbDiagonal.UseVisualStyleBackColor = true;
+            // 
+            // rbPingPong
+            // 
+            rbPingPong.AutoSize = true;
+            rbPingPong.Location = new Point(3, 224);
+            rbPingPong.Margin = new Padding(3, 0, 3, 4);
+            rbPingPong.Name = "rbPingPong";
+            rbPingPong.Size = new Size(163, 24);
+            rbPingPong.TabIndex = 8;
+            rbPingPong.Text = "Ping-Pong Handover Test";
+            rbPingPong.UseVisualStyleBackColor = true;
+            // 
+            // rbStepHandover
+            // 
+            rbStepHandover.AutoSize = true;
+            rbStepHandover.Location = new Point(3, 198);
+            rbStepHandover.Margin = new Padding(3, 0, 3, 4);
+            rbStepHandover.Name = "rbStepHandover";
+            rbStepHandover.Size = new Size(133, 24);
+            rbStepHandover.TabIndex = 7;
+            rbStepHandover.Text = "Step Handover Test";
+            rbStepHandover.UseVisualStyleBackColor = true;
             // 
             // rbTrans4
             // 
             rbTrans4.AutoSize = true;
-            rbTrans4.Location = new Point(138, 107);
+            rbTrans4.Location = new Point(3, 172);
+            rbTrans4.Margin = new Padding(3, 0, 3, 4);
             rbTrans4.Name = "rbTrans4";
             rbTrans4.Size = new Size(111, 24);
-            rbTrans4.TabIndex = 14;
-            rbTrans4.Text = "Transform 4";
+            rbTrans4.TabIndex = 6;
+            rbTrans4.Text = "Smooth Handover Test";
             rbTrans4.UseVisualStyleBackColor = true;
             // 
             // rbTrans3
             // 
             rbTrans3.AutoSize = true;
-            rbTrans3.Location = new Point(6, 107);
+            rbTrans3.Location = new Point(3, 146);
+            rbTrans3.Margin = new Padding(3, 0, 3, 4);
             rbTrans3.Name = "rbTrans3";
             rbTrans3.Size = new Size(111, 24);
-            rbTrans3.TabIndex = 13;
-            rbTrans3.Text = "Transform 3";
+            rbTrans3.TabIndex = 5;
+            rbTrans3.Text = "Sequential Roaming Test";
             rbTrans3.UseVisualStyleBackColor = true;
             // 
             // rbBasic3
             // 
             rbBasic3.AutoSize = true;
-            rbBasic3.Location = new Point(172, 26);
+            rbBasic3.Location = new Point(3, 120);
+            rbBasic3.Margin = new Padding(3, 0, 3, 4);
             rbBasic3.Name = "rbBasic3";
             rbBasic3.Size = new Size(77, 24);
-            rbBasic3.TabIndex = 10;
-            rbBasic3.Text = "Basic 3";
+            rbBasic3.TabIndex = 4;
+            rbBasic3.Text = "Group Sweep Test";
             rbBasic3.UseVisualStyleBackColor = true;
             // 
             // rbTrans2
             // 
             rbTrans2.AutoSize = true;
-            rbTrans2.Location = new Point(138, 56);
+            rbTrans2.Location = new Point(3, 94);
+            rbTrans2.Margin = new Padding(3, 0, 3, 4);
             rbTrans2.Name = "rbTrans2";
             rbTrans2.Size = new Size(111, 24);
-            rbTrans2.TabIndex = 12;
-            rbTrans2.Text = "Transform 2";
+            rbTrans2.TabIndex = 3;
+            rbTrans2.Text = "Parallel Pair Handover Test";
             rbTrans2.UseVisualStyleBackColor = true;
             // 
             // rbBasic2
             // 
             rbBasic2.AutoSize = true;
-            rbBasic2.Location = new Point(89, 26);
+            rbBasic2.Location = new Point(3, 68);
+            rbBasic2.Margin = new Padding(3, 0, 3, 4);
             rbBasic2.Name = "rbBasic2";
             rbBasic2.Size = new Size(77, 24);
-            rbBasic2.TabIndex = 9;
-            rbBasic2.Text = "Basic 2";
+            rbBasic2.TabIndex = 2;
+            rbBasic2.Text = "Sequential Sweep Test";
             rbBasic2.UseVisualStyleBackColor = true;
             // 
             // rbTrans1
             // 
             rbTrans1.AutoSize = true;
-            rbTrans1.Location = new Point(6, 56);
+            rbTrans1.Location = new Point(3, 42);
+            rbTrans1.Margin = new Padding(3, 0, 3, 4);
             rbTrans1.Name = "rbTrans1";
             rbTrans1.Size = new Size(111, 24);
-            rbTrans1.TabIndex = 11;
-            rbTrans1.Text = "Transform 1";
+            rbTrans1.TabIndex = 1;
+            rbTrans1.Text = "Dual Pair Handover Test";
             rbTrans1.UseVisualStyleBackColor = true;
             // 
             // rbBasic1
             // 
             rbBasic1.AutoSize = true;
             rbBasic1.Checked = true;
-            rbBasic1.Location = new Point(6, 26);
+            rbBasic1.Location = new Point(3, 16);
+            rbBasic1.Margin = new Padding(3, 0, 3, 4);
             rbBasic1.Name = "rbBasic1";
             rbBasic1.Size = new Size(77, 24);
-            rbBasic1.TabIndex = 8;
+            rbBasic1.TabIndex = 0;
             rbBasic1.TabStop = true;
-            rbBasic1.Text = "Basic 1";
+            rbBasic1.Text = "Cross Fade Test";
             rbBasic1.UseVisualStyleBackColor = true;
             // 
             // grpBtn
@@ -294,7 +334,7 @@
             grpBtn.Controls.Add(btnStop);
             grpBtn.Controls.Add(btnStart);
             grpBtn.Controls.Add(valEdit);
-            grpBtn.Location = new Point(12, 387);
+            grpBtn.Location = new Point(12, 565);
             grpBtn.Name = "grpBtn";
             grpBtn.Size = new Size(300, 62);
             grpBtn.TabIndex = 8;
@@ -342,7 +382,7 @@
             grpEdit.Controls.Add(txtHigh);
             grpEdit.Controls.Add(txtLow);
             grpEdit.Controls.Add(label5);
-            grpEdit.Location = new Point(12, 455);
+            grpEdit.Location = new Point(12, 633);
             grpEdit.Name = "grpEdit";
             grpEdit.Size = new Size(300, 78);
             grpEdit.TabIndex = 9;
@@ -461,7 +501,7 @@
             // 
             groupBox2.Controls.Add(cboEnableAnt);
             groupBox2.Controls.Add(label9);
-            groupBox2.Location = new Point(12, 326);
+            groupBox2.Location = new Point(12, 500);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(300, 55);
             groupBox2.TabIndex = 18;
@@ -509,7 +549,7 @@
             // 
             grpConfig.Controls.Add(btnLoadConfig);
             grpConfig.Controls.Add(btnSaveConfig);
-            grpConfig.Location = new Point(12, 539);
+            grpConfig.Location = new Point(12, 717);
             grpConfig.Name = "grpConfig";
             grpConfig.Size = new Size(300, 62);
             grpConfig.TabIndex = 21;
@@ -540,7 +580,7 @@
             // 
             AutoScaleDimensions = new SizeF(9F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1399, 613);
+            ClientSize = new Size(1399, 790);
             Controls.Add(grpConfig);
             Controls.Add(attr6);
             Controls.Add(attr5);
@@ -565,6 +605,8 @@
             grpBand.PerformLayout();
             grpMode.ResumeLayout(false);
             grpMode.PerformLayout();
+            pnlMode.ResumeLayout(false);
+            pnlMode.PerformLayout();
             grpBtn.ResumeLayout(false);
             grpBtn.PerformLayout();
             grpEdit.ResumeLayout(false);
@@ -585,6 +627,11 @@
         private RadioButton rbBand5;
         private RadioButton rbBand24;
         private GroupBox grpMode;
+        private FlowLayoutPanel pnlMode;
+        private RadioButton rbFailover;
+        private RadioButton rbDiagonal;
+        private RadioButton rbPingPong;
+        private RadioButton rbStepHandover;
         private RadioButton rbTrans4;
         private RadioButton rbTrans3;
         private RadioButton rbBasic3;
@@ -609,9 +656,6 @@
         private AttenuatorControl attr2;
         private AttenuatorControl attr3;
         private AttenuatorControl attr4;
-        private Label label2;
-        private Label label3;
-        private Label label8;
         private GroupBox groupBox2;
         private ComboBox cboEnableAnt;
         private Label label9;
