@@ -1,0 +1,42 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0/win-x64",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {},
+    ".NETCoreApp,Version=v8.0/win-x64": {
+      "New_Attenuator/1.0.0": {
+        "dependencies": {
+          "System.IO.Ports": "10.0.2"
+        },
+        "runtime": {
+          "New_Attenuator.dll": {}
+        }
+      },
+      "System.IO.Ports/10.0.2": {
+        "runtime": {
+          "runtimes/win/lib/net8.0/System.IO.Ports.dll": {
+            "assemblyVersion": "10.0.0.2",
+            "fileVersion": "10.0.225.61305"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "New_Attenuator/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.IO.Ports/10.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-M3KujcSLPji8JPkv97PwMHmKsT/UpsEuPsKdu3oAprROJz3oO71T2dmMKmOCZWiPbQvkwHEhx0rEHYwtbOpmXA==",
+      "path": "system.io.ports/10.0.2",
+      "hashPath": "system.io.ports.10.0.2.nupkg.sha512"
+    }
+  }
+}

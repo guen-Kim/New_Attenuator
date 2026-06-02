@@ -722,7 +722,7 @@ namespace New_Attenuator
             {
                 Filter = "INI files (*.ini)|*.ini|All files (*.*)|*.*",
                 DefaultExt = "ini",
-                FileName = "attenuator_setting.ini",
+                FileName = $"attenuator_setting_{DateTime.Now:yyyyMMddHHmm}.ini",
                 Title = "Save environment setting"
             };
 
@@ -786,7 +786,6 @@ namespace New_Attenuator
             ini.Write("Profile", "Name", "DQA_Environment");
 
             ini.Write("Serial", "Port", cboPort.SelectedItem?.ToString() ?? "");
-            ini.WriteInt("Serial", "BaudRate", serialPort.BaudRate);
 
             ini.Write("Test", "Band", GetSelectedBand());
             ini.Write("Test", "Mode", GetSelectedMode());
