@@ -716,12 +716,31 @@ namespace New_Attenuator
             MessageBox.Show(reason, "Communication Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        private string GetSettingRootDirectory()
+        {
+            DirectoryInfo? dir = new DirectoryInfo(AppContext.BaseDirectory);
+
+            while (dir != null)
+            {
+                if (File.Exists(Path.Combine(dir.FullName, "New_Attenuator.slnx")) ||
+                    File.Exists(Path.Combine(dir.FullName, "New_Attenuator.sln")))
+                {
+                    return Path.Combine(dir.FullName, "New_Attenuator");
+                }
+
+                dir = dir.Parent;
+            }
+
+            return AppContext.BaseDirectory;
+        }
+
         private void btnSaveConfig_Click(object sender, EventArgs e)
         {
             using SaveFileDialog dialog = new SaveFileDialog
             {
                 Filter = "INI files (*.ini)|*.ini|All files (*.*)|*.*",
                 DefaultExt = "ini",
+                InitialDirectory = GetSettingRootDirectory(),
                 FileName = $"attenuator_setting_{DateTime.Now:yyyyMMddHHmm}.ini",
                 Title = "Save environment setting"
             };
@@ -736,20 +755,20 @@ namespace New_Attenuator
                 var ini = new IniFile();
                 SaveCurrentSettings(ini);
                 ini.Save(dialog.FileName);
-                MessageBox.Show("Environment setting saved.", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Environment setting saved.\n{dialog.FileName}", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Save failed: " + ex.Message, "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void btnLoadConfig_Click(object sender, EventArgs e)
         {
             using OpenFileDialog dialog = new OpenFileDialog
             {
                 Filter = "INI files (*.ini)|*.ini|All files (*.*)|*.*",
-                Title = "Load environment setting"
+                Title = "Load environment setting",
+                InitialDirectory = GetSettingRootDirectory()
             };
 
             if (dialog.ShowDialog() != DialogResult.OK)
