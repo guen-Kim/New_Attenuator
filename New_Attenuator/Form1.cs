@@ -45,17 +45,17 @@ namespace New_Attenuator
             modeToolTip.ReshowDelay = 100;
             modeToolTip.ShowAlways = true;
 
-            modeToolTip.SetToolTip(rbBasic1, "[2 AP] / 두 AP를 서로 반대 방향으로 감쇠시키는 교차 테스트입니다.");
-            modeToolTip.SetToolTip(rbBasic2, "[1~N AP] / 선택된 AP를 하나씩 순서대로 스윕하는 테스트입니다.");
-            modeToolTip.SetToolTip(rbBasic3, "[N AP] / 활성 AP 전체를 같은 값으로 동시에 올리고 내리는 테스트입니다.");
-            modeToolTip.SetToolTip(rbTrans1, "[4 AP] / AP1/AP3와 AP2/AP4를 두 쌍으로 나눠 순차 전환합니다.");
-            modeToolTip.SetToolTip(rbTrans2, "[4 AP] / 2개 AP 쌍을 동시에 교차 전환하는 테스트입니다.");
-            modeToolTip.SetToolTip(rbTrans3, "[4 AP] / 4개 AP를 순서대로 하나씩 전환하는 테스트입니다.");
-            modeToolTip.SetToolTip(rbTrans4, "[4 AP] / AP가 겹치며 다음 AP로 자연스럽게 넘어가는 테스트입니다.");
-            modeToolTip.SetToolTip(rbStepHandover, "[4 AP] / AP를 한 칸씩 순차적으로 넘기는 테스트입니다.");
-            modeToolTip.SetToolTip(rbPingPong, "[2 AP] / 두 AP 사이를 반복 전환하는 안정성 테스트입니다.");
-            modeToolTip.SetToolTip(rbDiagonal, "[4 AP] / 비연속 AP로 건너뛰는 전환 경로 테스트입니다.");
-            modeToolTip.SetToolTip(rbFailover, "[4 AP] / 주 AP 장애 시 백업 AP로 복구하는 장애 대응 테스트입니다.");
+            modeToolTip.SetToolTip(rbBasic1, "[2 AP] - 두 AP를 서로 반대 방향으로 감쇠시키는 교차 테스트입니다.");
+            modeToolTip.SetToolTip(rbBasic2, "[1~N AP] - 선택된 AP를 하나씩 순서대로 스윕하는 테스트입니다.");
+            modeToolTip.SetToolTip(rbBasic3, "[N AP] - 활성 AP 전체를 같은 값으로 동시에 올리고 내리는 테스트입니다.");
+            modeToolTip.SetToolTip(rbTrans1, "[4 AP] - AP1/AP3와 AP2/AP4를 두 쌍으로 나눠 순차 전환합니다.");
+            modeToolTip.SetToolTip(rbTrans2, "[4 AP] - 2개 AP 쌍을 동시에 교차 전환하는 테스트입니다.");
+            modeToolTip.SetToolTip(rbTrans3, "[4 AP] - 4개 AP를 순서대로 하나씩 전환하는 테스트입니다.");
+            modeToolTip.SetToolTip(rbTrans4, "[4 AP] - AP가 겹치며 다음 AP로 자연스럽게 넘어가는 테스트입니다.");
+            modeToolTip.SetToolTip(rbStepHandover, "[4 AP] - AP를 한 칸씩 순차적으로 넘기는 테스트입니다.");
+            modeToolTip.SetToolTip(rbPingPong, "[2 AP] - 두 AP 사이를 반복 전환하는 안정성 테스트입니다.");
+            modeToolTip.SetToolTip(rbDiagonal, "[4 AP] - 비연속 AP로 건너뛰는 전환 경로 테스트입니다.");
+            modeToolTip.SetToolTip(rbFailover, "[4 AP] - 주 AP 장애 시 백업 AP로 복구하는 장애 대응 테스트입니다.");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -374,6 +374,7 @@ namespace New_Attenuator
             if (channels.Count < required)
             {
                 MessageBox.Show($"{modeName} mode requires at least {required} active antennas.", "Mode Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                isRunning = false;
                 return false;
             }
 
