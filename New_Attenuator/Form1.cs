@@ -61,7 +61,6 @@ namespace New_Attenuator
         private void Form1_Load(object sender, EventArgs e)
         {
             // 포트 목록 불러오기
-            grpBand.Enabled = false;
             grpMode.Enabled = false;
             grpBtn.Enabled = false;
 
@@ -92,8 +91,6 @@ namespace New_Attenuator
             txtStep.Enabled = false;
             txtTimeout.Enabled = false;
 
-            // 기본 2.4GHz 선택
-            rbBand24.Checked = true;
             ApplyPreset();
 
             // 감쇠기 이벤트 연결 (AttenuatorControl이 있다고 가정)
@@ -112,7 +109,6 @@ namespace New_Attenuator
             {
                 if (serialPort.IsOpen)
                 {
-                    grpBand.Enabled = false;
                     grpMode.Enabled = false;
                     grpBtn.Enabled = false;
                     serialPort.Close();
@@ -122,7 +118,6 @@ namespace New_Attenuator
                 }
                 else
                 {
-                    grpBand.Enabled = true;
                     grpMode.Enabled = true;
                     grpBtn.Enabled = true;
                     btnStop.Enabled = false;
@@ -145,16 +140,6 @@ namespace New_Attenuator
             }
         }
 
-        // 4. Band 선택 및 프리셋 로직
-        private void rbBand_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rb = sender as RadioButton;
-            if (rb != null && rb.Checked)
-            {
-                ApplyPreset();
-            }
-        }
-
         private void valEdit_CheckedChanged(object sender, EventArgs e)
         {
             bool canEdit = valEdit.Checked;
@@ -171,12 +156,9 @@ namespace New_Attenuator
             if (valEdit.Checked) return;
 
             txtLow.Text = "0";
+            txtHigh.Text = "50";
             txtStep.Text = "1";
             txtTimeout.Text = "0"; // 0 = 무한
-
-            if (rbBand24.Checked) txtHigh.Text = "40";
-            else if (rbBand5.Checked) txtHigh.Text = "30";
-            else if (rbBand6.Checked) txtHigh.Text = "50";
         }
 
         // 5. [핵심] Start 버튼 (자동화)
@@ -289,7 +271,6 @@ namespace New_Attenuator
 
             // 실행 중엔 설정 변경 불가
             valEdit.Enabled = enable;
-            grpBand.Enabled = enable;
             grpMode.Enabled = enable;
 
             if (valEdit.Checked)
@@ -1043,7 +1024,6 @@ namespace New_Attenuator
             btnConnect.BackColor = SystemColors.Control;
             cboPort.Enabled = true;
 
-            grpBand.Enabled = false;
             grpMode.Enabled = false;
             grpBtn.Enabled = false;
 
@@ -1140,7 +1120,6 @@ namespace New_Attenuator
 
             ini.Write("Serial", "Port", cboPort.SelectedItem?.ToString() ?? "");
 
-            ini.Write("Test", "Band", GetSelectedBand());
             ini.Write("Test", "Mode", GetSelectedMode());
             ini.Write("Test", "ModeText", GetSelectedModeText());
             ini.WriteBool("Test", "OverrideParameter", valEdit.Checked);
@@ -1167,7 +1146,6 @@ namespace New_Attenuator
             }
 
             SetComboBoxSelectedText(cboPort, ini.Read("Serial", "Port", cboPort.SelectedItem?.ToString() ?? ""));
-            SetBand(ini.Read("Test", "Band", GetSelectedBand()));
             string modeValue = ini.Read("Test", "Mode", ini.Read("Test", "ModeText", GetSelectedMode()));
             SetMode(modeValue);
 
@@ -1215,24 +1193,6 @@ namespace New_Attenuator
             if (antCount >= 4) SendCommand(attr4.SelectedChannel, attr4.Value);
             if (antCount >= 5) SendCommand(attr5.SelectedChannel, attr5.Value);
             if (antCount >= 6) SendCommand(attr6.SelectedChannel, attr6.Value);
-        }
-
-        private string GetSelectedBand()
-        {
-            if (rbBand5.Checked) return "5GHz";
-            if (rbBand6.Checked) return "6GHz";
-            return "2.4GHz";
-        }
-
-        private void SetBand(string band)
-        {
-            rbBand24.Checked = false;
-            rbBand5.Checked = false;
-            rbBand6.Checked = false;
-
-            if (band == "5GHz") rbBand5.Checked = true;
-            else if (band == "6GHz") rbBand6.Checked = true;
-            else rbBand24.Checked = true;
         }
 
         private string GetSelectedMode()

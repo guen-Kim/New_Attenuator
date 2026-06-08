@@ -32,10 +32,6 @@
             label1 = new Label();
             cboPort = new ComboBox();
             btnConnect = new Button();
-            grpBand = new GroupBox();
-            rbBand6 = new RadioButton();
-            rbBand5 = new RadioButton();
-            rbBand24 = new RadioButton();
             grpMode = new GroupBox();
             pnlMode = new FlowLayoutPanel();
             rbFailover = new RadioButton();
@@ -75,7 +71,6 @@
             btnLoadConfig = new Button();
             btnSaveConfig = new Button();
             groupBox1.SuspendLayout();
-            grpBand.SuspendLayout();
             grpMode.SuspendLayout();
             pnlMode.SuspendLayout();
             grpBtn.SuspendLayout();
@@ -124,59 +119,12 @@
             btnConnect.UseVisualStyleBackColor = true;
             btnConnect.Click += btnConnect_Click;
             // 
-            // grpBand
-            // 
-            grpBand.Controls.Add(rbBand6);
-            grpBand.Controls.Add(rbBand5);
-            grpBand.Controls.Add(rbBand24);
-            grpBand.Location = new Point(12, 88);
-            grpBand.Name = "grpBand";
-            grpBand.Size = new Size(300, 65);
-            grpBand.TabIndex = 4;
-            grpBand.TabStop = false;
-            grpBand.Text = "Select Band";
-            // 
-            // rbBand6
-            // 
-            rbBand6.AutoSize = true;
-            rbBand6.Location = new Point(208, 26);
-            rbBand6.Name = "rbBand6";
-            rbBand6.Size = new Size(67, 24);
-            rbBand6.TabIndex = 7;
-            rbBand6.Text = "6GHz";
-            rbBand6.UseVisualStyleBackColor = true;
-            rbBand6.CheckedChanged += rbBand_CheckedChanged;
-            // 
-            // rbBand5
-            // 
-            rbBand5.AutoSize = true;
-            rbBand5.Location = new Point(120, 26);
-            rbBand5.Name = "rbBand5";
-            rbBand5.Size = new Size(67, 24);
-            rbBand5.TabIndex = 6;
-            rbBand5.Text = "5GHz";
-            rbBand5.UseVisualStyleBackColor = true;
-            rbBand5.CheckedChanged += rbBand_CheckedChanged;
-            // 
-            // rbBand24
-            // 
-            rbBand24.AutoSize = true;
-            rbBand24.Checked = true;
-            rbBand24.Location = new Point(21, 26);
-            rbBand24.Name = "rbBand24";
-            rbBand24.Size = new Size(78, 24);
-            rbBand24.TabIndex = 5;
-            rbBand24.TabStop = true;
-            rbBand24.Text = "2.4GHz";
-            rbBand24.UseVisualStyleBackColor = true;
-            rbBand24.CheckedChanged += rbBand_CheckedChanged;
-            // 
             // grpMode
             // 
             grpMode.AutoSize = true;
             grpMode.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             grpMode.Controls.Add(pnlMode);
-            grpMode.Location = new Point(12, 159);
+            grpMode.Location = new Point(12, 88);
             grpMode.Name = "grpMode";
             grpMode.Padding = new Padding(8);
             grpMode.TabIndex = 5;
@@ -334,7 +282,7 @@
             grpBtn.Controls.Add(btnStop);
             grpBtn.Controls.Add(btnStart);
             grpBtn.Controls.Add(valEdit);
-            grpBtn.Location = new Point(12, 565);
+            grpBtn.Location = new Point(12, 494);
             grpBtn.Name = "grpBtn";
             grpBtn.Size = new Size(300, 62);
             grpBtn.TabIndex = 8;
@@ -382,7 +330,7 @@
             grpEdit.Controls.Add(txtHigh);
             grpEdit.Controls.Add(txtLow);
             grpEdit.Controls.Add(label5);
-            grpEdit.Location = new Point(12, 633);
+            grpEdit.Location = new Point(12, 562);
             grpEdit.Name = "grpEdit";
             grpEdit.Size = new Size(300, 78);
             grpEdit.TabIndex = 9;
@@ -501,7 +449,7 @@
             // 
             groupBox2.Controls.Add(cboEnableAnt);
             groupBox2.Controls.Add(label9);
-            groupBox2.Location = new Point(12, 500);
+            groupBox2.Location = new Point(12, 429);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(300, 55);
             groupBox2.TabIndex = 18;
@@ -549,7 +497,7 @@
             // 
             grpConfig.Controls.Add(btnLoadConfig);
             grpConfig.Controls.Add(btnSaveConfig);
-            grpConfig.Location = new Point(12, 717);
+            grpConfig.Location = new Point(12, 646);
             grpConfig.Name = "grpConfig";
             grpConfig.Size = new Size(300, 62);
             grpConfig.TabIndex = 21;
@@ -592,7 +540,6 @@
             Controls.Add(grpEdit);
             Controls.Add(grpBtn);
             Controls.Add(grpMode);
-            Controls.Add(grpBand);
             Controls.Add(groupBox1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "Form1";
@@ -601,8 +548,6 @@
             Load += Form1_Load;
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
-            grpBand.ResumeLayout(false);
-            grpBand.PerformLayout();
             grpMode.ResumeLayout(false);
             grpMode.PerformLayout();
             pnlMode.ResumeLayout(false);
@@ -622,10 +567,6 @@
         private ComboBox cboPort;
         private Button btnConnect;
         private Label label1;
-        private GroupBox grpBand;
-        private RadioButton rbBand6;
-        private RadioButton rbBand5;
-        private RadioButton rbBand24;
         private GroupBox grpMode;
         private FlowLayoutPanel pnlMode;
         private RadioButton rbFailover;

@@ -28,15 +28,6 @@
 - `Launch Virtual Serial Port Driver`를 사용하면 시리얼 포트 통신을 미러링해서 전달 값을 쉽게 확인할 수 있다
 - 실제 장비 없이도 전송되는 명령어를 검증하거나 테스트 로그를 확인할 때 유용하다
 
-시리얼 통신 설정은 다음과 같다.
-
-- Baud rate: `115200`
-- Data bits: `8`
-- Stop bits: `1`
-- Parity: `None`
-- Handshake: `None`
-- Read timeout: `500 ms`
-
 ## 제어 명령어
 
 감쇠기 제어는 텍스트 명령을 시리얼 포트로 전송하는 방식이다.
