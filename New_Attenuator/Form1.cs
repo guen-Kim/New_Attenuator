@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using static New_Attenuator.AttenuatorControl;
@@ -22,8 +23,19 @@ namespace New_Attenuator
         public Form1()
         {
             InitializeComponent();
+            UpdateWindowTitle();
             SetupModeToolTips();
 
+        }
+
+        private void UpdateWindowTitle()
+        {
+            string version = Assembly.GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion
+                ?? "1.0.0";
+
+            Text = $"New_Attenuator {version}";
         }
 
         private void SetupModeToolTips()
