@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="New_Attenuator/New_Attenuator.csproj" />
+  <Project Path="New_Attenuator/New_Attenuator.csproj">
+    <BuildType Project="Release" />
+  </Project>
 </Solution>
